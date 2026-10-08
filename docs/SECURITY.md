@@ -56,7 +56,8 @@ It does **not**:
 - **Profile binding**: the profile name is embedded in the **signed** challenge `data`. `AltchaType` binds its `AltchaValid` constraint to the field profile, so a `low` solution is rejected on a `high` field.
 - **Signature first**: `altcha-org/altcha` checks the HMAC signature (constant-time `hash_equals`) **before** any PBKDF2 work, so forged challenges cannot burn CPU on verification.
 - **Mandatory expiry**: every issued challenge carries `expiresAt`; payloads without expiry are rejected, expired ones fail. Profile `expires` must be a relative future offset of at most one day.
-- **Bounded difficulty**: profile `cost` ≤ `100000` and counters ≤ `1000000` (configuration is rejected otherwise). Unknown `?profile=` values return **HTTP 400** (no exception / 500).
+- **Bounded difficulty**: profile `cost` ≤ `100000` and counters ≤ `1000000`; for ALTCHA v3 memory-hard algorithms `ARGON2ID` cost ≤ 10 and memory ≤ 64 MiB, `SCRYPT` N ≤ 65536, r ≤ 16, p ≤ 4 (configuration is rejected otherwise). Memory-hard profiles cost server memory on every challenge request — rate-limit the endpoint accordingly.
+- **Algorithm pinning**: the key-derivation algorithm comes from the (signed) profile; payloads whose challenge algorithm differs are rejected before any derivation. Unknown `?profile=` values return **HTTP 400** (no exception / 500).
 - **Payload size limit**: payloads longer than `4096` bytes are rejected before decoding.
 - **Sentinel**: a Sentinel verdict (accept or reject) is **final**. Only a transport failure (network error, 5xx, invalid body) may fall back to local verification, and only with `sentinel.fallback_local: true` (default `false`). `base_url` must be `https://`; timeouts are bounded (`timeout` ≤ 10 s, `retries` ≤ 2) per REQ-RUNTIME-001.
 - **Fail closed**: any decoding or verification error yields "invalid".
@@ -65,7 +66,7 @@ It does **not**:
 
 ## Secrets and cryptography
 
-- Challenges are signed with HMAC (`SHA-256` default, `SHA-384`/`SHA-512` available); solutions use PBKDF2 (altcha-org v2).
+- Challenges are signed with HMAC (`SHA-256` default, `SHA-384`/`SHA-512` available); solutions use the profile's ALTCHA v3 key derivation: PBKDF2 (default), SHA, Argon2id (`ext-sodium`) or Scrypt (`ext-scrypt`).
 - Use a **dedicated** secret: the Flex recipe adds `ALTCHA_HMAC_SIGNATURE=%generate(secret)%` to `.env` and wires `hmac_signature: '%env(ALTCHA_HMAC_SIGNATURE)%'`. The bundle default (`%env(APP_SECRET)%`) is a fallback only.
 - Never commit real secrets; keep them in env vars or Symfony secrets. Rotating the key invalidates outstanding challenges (users simply solve again).
 - An empty key never verifies (fail closed).
@@ -82,7 +83,7 @@ When the host app sends a CSP:
 
 - `script-src` / `style-src` must allow the bundle assets (`/bundles/nowoaltchatype/` via `assets:install`) or your Vite build;
 - `connect-src` must allow the challenge route (same origin by default) and, if the widget verifies remotely, your Sentinel host;
-- `worker-src blob:` is required by the ALTCHA widget, which solves the proof-of-work in Web Workers.
+- `worker-src blob:` is required by the ALTCHA widget, which solves the proof-of-work in Web Workers; Argon2id / Scrypt profiles additionally load `'self'` workers from `/bundles/nowoaltchatype/workers/`.
 
 ## Permissions and exposure
 
@@ -107,7 +108,7 @@ When the host app sends a CSP:
 | Input validation and output escaping (payload limits, signed data, Twig escaping) | ✅ |
 | Dependencies audited (`composer audit` in CI) | ✅ |
 | No secrets or payloads in logs | ✅ |
-| Cryptography: HMAC-SHA2 + PBKDF2, constant-time comparison, dedicated key | ✅ |
+| Cryptography: HMAC-SHA2 + PBKDF2 / SHA / Argon2id / Scrypt (ALTCHA v3), algorithm pinned per profile, constant-time comparison, dedicated key | ✅ |
 | Permissions / exposure: single public `GET` route, documented | ✅ |
 | Limits / DoS: bounded cost, counters, expiry, Sentinel timeouts, 400 on unknown profile | ✅ |
 | AI security audit (REQ-SEC-004) passed — see `BUNDLES_SECURITY_ANALYSIS.md` (AltchaTypeBundle) | ✅ |

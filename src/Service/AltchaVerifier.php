@@ -10,6 +10,7 @@ use AltchaOrg\Altcha\Sentinel;
 use AltchaOrg\Altcha\VerifyServerOptions;
 use AltchaOrg\Altcha\VerifySolutionOptions;
 use InvalidArgumentException;
+use Nowo\AltchaTypeBundle\Profile\AltchaTypeProfileRegistry;
 use Nowo\AltchaTypeBundle\Service\Sentinel\TransportTrackingHttpClient;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Clock\ClockInterface;
@@ -23,8 +24,9 @@ use function strlen;
 /**
  * Verifies ALTCHA payloads submitted by the widget (local proof-of-work or optional Sentinel).
  *
- * Local verification enforces, in order: payload size, signature + expiry + solution (altcha-org),
- * the profile signed into the challenge, and single use (replay cache) when a pool is configured.
+ * Local verification enforces, in order: payload size, expiry presence, the profile signed into the
+ * challenge, the profile's v3 algorithm (PBKDF2/SHA/ARGON2ID/SCRYPT), signature + expiry + solution
+ * (altcha-org), and single use (replay cache) when a pool is configured.
  */
 final class AltchaVerifier
 {
@@ -37,13 +39,14 @@ final class AltchaVerifier
     private readonly ClockInterface $clock;
 
     /**
-     * @param AltchaClientFactory $clientFactory Builds the Altcha client and PBKDF2 algorithm
+     * @param AltchaClientFactory $clientFactory Builds the Altcha client and key-derivation algorithm
      * @param bool $enable When false, every payload is accepted (test environments only)
      * @param array{enabled?: bool, base_url?: string|null, api_key?: string|null, timeout?: float, retries?: int, fallback_local?: bool} $sentinel Optional Sentinel settings
      * @param CacheItemPoolInterface|null $replayCache Pool remembering used challenges (null disables replay protection)
      * @param LoggerInterface|null $logger PSR-3 logger (never receives payloads or secrets)
      * @param ClockInterface|null $clock Clock for replay-cache TTLs (defaults to the native clock)
      * @param HttpClientInterface|null $sentinelHttpClient HTTP client for Sentinel (defaults to the altcha-org stream client)
+     * @param AltchaTypeProfileRegistry|null $profiles Profiles (select the v3 algorithm; PBKDF2 when null)
      */
     public function __construct(
         private readonly AltchaClientFactory $clientFactory,
@@ -53,6 +56,7 @@ final class AltchaVerifier
         private readonly ?LoggerInterface $logger = null,
         ?ClockInterface $clock = null,
         private readonly ?HttpClientInterface $sentinelHttpClient = null,
+        private readonly ?AltchaTypeProfileRegistry $profiles = null,
     ) {
         $this->clock = $clock ?? new NativeClock();
     }
@@ -120,10 +124,26 @@ final class AltchaVerifier
             return false;
         }
 
+        $signedProfile = $parameters->data[AltchaChallengeFactory::DATA_PROFILE_KEY] ?? null;
+        $algorithmName = $this->resolveAlgorithmName($expectedProfile ?? (is_string($signedProfile) ? $signedProfile : null));
+        if ($algorithmName === null) {
+            $this->logger?->info('ALTCHA payload rejected: unknown profile.');
+
+            return false;
+        }
+
         try {
+            $algorithm = $this->clientFactory->createAlgorithm($algorithmName);
+            // The server decides the algorithm from the profile; never trust the client-provided name.
+            if ($parameters->algorithm !== $algorithm->getAlgorithmName()) {
+                $this->logger?->info('ALTCHA payload rejected: unexpected algorithm.');
+
+                return false;
+            }
+
             $result = $this->clientFactory->createClient()->verifySolution(new VerifySolutionOptions(
                 payload: $decoded,
-                algorithm: $this->clientFactory->createAlgorithm(),
+                algorithm: $algorithm,
             ));
         } catch (Throwable $e) {
             $this->logger?->warning('ALTCHA verification error: {message}', ['message' => $e->getMessage()]);
@@ -136,6 +156,22 @@ final class AltchaVerifier
         }
 
         return $this->consume((string) $decoded->challenge->signature, (float) $parameters->expiresAt);
+    }
+
+    /**
+     * Resolves the key-derivation algorithm configured for a profile (PBKDF2 without a registry).
+     *
+     * @param string|null $profileName Expected or signed profile name
+     *
+     * @return string|null Algorithm name, or null when the profile is unknown
+     */
+    private function resolveAlgorithmName(?string $profileName): ?string
+    {
+        if (!$this->profiles instanceof AltchaTypeProfileRegistry || $profileName === null) {
+            return 'PBKDF2';
+        }
+
+        return $this->profiles->has($profileName) ? $this->profiles->get($profileName)['algorithm'] : null;
     }
 
     /**

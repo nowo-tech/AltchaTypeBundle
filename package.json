@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.15.0",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "build": "vite build && cp src/Resources/assets/css/altcha-type.css src/Resources/public/altcha-type.css",
+    "build": "vite build && cp src/Resources/assets/css/altcha-type.css src/Resources/public/altcha-type.css && mkdir -p src/Resources/public/workers && cp node_modules/altcha/dist/workers/argon2id.js node_modules/altcha/dist/workers/scrypt.js src/Resources/public/workers/",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"

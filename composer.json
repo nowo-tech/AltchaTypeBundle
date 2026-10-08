@@ -79,7 +79,9 @@
         ]
     },
     "suggest": {
-        "pentatrion/vite-bundle": "Compile the Stimulus controller with Pentatrion Vite in the host app (Twig vite_entry_* helpers). The Symfony 8 demo uses this stack with pnpm."
+        "pentatrion/vite-bundle": "Compile the Stimulus controller with Pentatrion Vite in the host app (Twig vite_entry_* helpers). The Symfony 8 demo uses this stack with pnpm.",
+        "ext-sodium": "Required for ALTCHA v3 ARGON2ID profiles.",
+        "ext-scrypt": "Required for ALTCHA v3 SCRYPT profiles (https://github.com/DomBlack/php-scrypt)."
     },
     "config": {
         "allow-plugins": {

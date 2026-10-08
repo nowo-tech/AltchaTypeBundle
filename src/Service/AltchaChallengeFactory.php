@@ -16,7 +16,8 @@ use Symfony\Component\Clock\NativeClock;
  * Creates signed ALTCHA challenges for the widget challenge endpoint.
  *
  * The resolved profile name is embedded in the signed challenge `data` so the verifier can
- * reject solutions issued for a different (e.g. cheaper) profile.
+ * reject solutions issued for a different (e.g. cheaper) profile. The key-derivation algorithm
+ * (ALTCHA v3: PBKDF2, SHA, ARGON2ID, SCRYPT) and its memory/parallelism come from the profile.
  */
 final class AltchaChallengeFactory
 {
@@ -26,7 +27,7 @@ final class AltchaChallengeFactory
     private readonly ClockInterface $clock;
 
     /**
-     * @param AltchaClientFactory $clientFactory Builds the Altcha client and PBKDF2 algorithm
+     * @param AltchaClientFactory $clientFactory Builds the Altcha client and key-derivation algorithm
      * @param AltchaTypeProfileRegistry $profiles Named difficulty profiles
      * @param ClockInterface|null $clock Clock used for challenge expiry (defaults to the native clock)
      */
@@ -53,7 +54,7 @@ final class AltchaChallengeFactory
         $name    = $profileName ?? $this->profiles->getDefaultProfileName();
         $profile = $this->profiles->get($name);
         $client  = $this->clientFactory->createClient();
-        $algo    = $this->clientFactory->createAlgorithm();
+        $algo    = $this->clientFactory->createAlgorithm($profile['algorithm']);
 
         $counterMin = $profile['counter_min'];
         $counterMax = $profile['counter_max'];
@@ -65,6 +66,8 @@ final class AltchaChallengeFactory
             algorithm: $algo,
             cost: $profile['cost'],
             counter: $counter,
+            memoryCost: $profile['memory_cost'],
+            parallelism: $profile['parallelism'],
             expiresAt: $this->clock->now()->modify($profile['expires']),
             data: [self::DATA_PROFILE_KEY => $name],
         ));

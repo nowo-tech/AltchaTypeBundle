@@ -6,6 +6,7 @@ Root key: `nowo_altcha_type` (REQ-CFG-001). The tree is strict: unknown keys and
 
 - [Options](#options)
 - [Profiles](#profiles)
+- [Algorithms (ALTCHA v3)](#algorithms-altcha-v3)
 - [Replay protection](#replay-protection)
 - [Sentinel](#sentinel)
 - [Timeouts (FrankenPHP / PHP-FPM)](#timeouts-frankenphp--php-fpm)
@@ -44,6 +45,9 @@ A profile is a complete settings block. Every key is optional in your config; mi
 | `floating` | `false` | — | Floating widget |
 | `hide_logo` | `false` | — | Hide the ALTCHA logo |
 | `hide_footer` | `false` | — | Hide the widget footer |
+| `algorithm` | `PBKDF2` | `PBKDF2`, `SHA`, `ARGON2ID`, `SCRYPT` | ALTCHA v3 key derivation ([Algorithms](#algorithms-altcha-v3)) |
+| `memory_cost` | `null` | per algorithm | `ARGON2ID`: KiB · `SCRYPT`: block size `r` |
+| `parallelism` | `null` | per algorithm | `SCRYPT` only: `p` |
 
 Built-in profiles: `default` (balanced), `low` (cheap, newsletters/comments), `high` (expensive, abuse-prone endpoints), `contact` (floating), `invisible` (floating, no logo/footer).
 
@@ -67,6 +71,32 @@ nowo_altcha_type:
       counter_max: 60000
       expires: '+5 minutes'
 ```
+
+## Algorithms (ALTCHA v3)
+
+The bundle speaks the ALTCHA v3 protocol (`altcha-org/altcha` 2.x on the server, the `<altcha-widget>` v3 in the browser). Each profile picks the key-derivation algorithm; the server signs it into the challenge and only verifies with the profile's algorithm (a client-supplied name is never trusted).
+
+| `algorithm` | Challenge id | `cost` | `memory_cost` | `parallelism` | Server requirement | Browser |
+| --- | --- | --- | --- | --- | --- | --- |
+| `PBKDF2` (default) | `PBKDF2/<hmac_algorithm>` | 1 – 100000 iterations | — | — | none | bundled |
+| `SHA` | `<hmac_algorithm>` (e.g. `SHA-256`) | 1 – 100000 | — | — | none | bundled |
+| `ARGON2ID` | `ARGON2ID` | 1 – 10 iterations | 1024 – 65536 KiB (default 19456) | — | `ext-sodium` | worker `workers/argon2id.js` |
+| `SCRYPT` | `SCRYPT` | N: power of two 1024 – 65536 | r: 1 – 16 (default 8) | p: 1 – 4 (default 1) | `ext-scrypt` | worker `workers/scrypt.js` |
+
+Memory-hard algorithms (Argon2id, Scrypt) resist GPU/ASIC acceleration, but **each attempt is expensive**: keep `counter_max` small (tens, not thousands). The server derives one key when issuing a challenge and one when verifying, so `memory_cost` is also server memory per request (see [SECURITY.md](SECURITY.md#mitigations)).
+
+```yaml
+nowo_altcha_type:
+  profiles:
+    memory_hard:
+      algorithm: ARGON2ID
+      cost: 2
+      memory_cost: 19456   # 19 MiB
+      counter_min: 5
+      counter_max: 20
+```
+
+The configuration is rejected at compile time when the required PHP extension is missing or a value is out of range. The widget template adds `data-altcha-type-workers-url-value` for these profiles so the frontend registers the Argon2id/Scrypt workers published under `/bundles/nowoaltchatype/workers/` (run `assets:install`).
 
 ## Replay protection
 

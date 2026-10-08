@@ -53,4 +53,31 @@ final class AltchaClientFactoryTest extends TestCase
 
         self::assertInstanceOf(Pbkdf2::class, $factory->createAlgorithm());
     }
+
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function v3Algorithms(): iterable
+    {
+        yield 'pbkdf2' => ['PBKDF2', 'PBKDF2/SHA-384'];
+        yield 'sha' => ['SHA', 'SHA-384'];
+        yield 'argon2id' => ['ARGON2ID', 'ARGON2ID'];
+        yield 'scrypt' => ['SCRYPT', 'SCRYPT'];
+    }
+
+    #[Test]
+    #[DataProvider('v3Algorithms')]
+    public function createsEveryV3Algorithm(string $algorithm, string $expectedName): void
+    {
+        $factory = new AltchaClientFactory('secret', null, 'SHA-384');
+
+        self::assertSame($expectedName, $factory->createAlgorithm($algorithm)->getAlgorithmName());
+    }
+
+    #[Test]
+    public function rejectsUnknownKeyDerivationAlgorithm(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        (new AltchaClientFactory('secret', null, 'SHA-256'))->createAlgorithm('BCRYPT');
+    }
 }

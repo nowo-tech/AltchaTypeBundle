@@ -50,4 +50,17 @@ test.describe('AltchaType demo', () => {
     await expect(page.locator('.alert-success')).toHaveCount(0);
     await expect(page.locator('.invalid-feedback, .form-error-message').first()).toBeVisible();
   });
+
+  test('ALTCHA v3 Argon2id profile solves in the browser and passes server verification', async ({ page }) => {
+    await page.goto('/en?case=memory_hard');
+    await page.getByLabel('Name', { exact: true }).fill('Ada');
+    await page.getByLabel('Email', { exact: true }).fill('ada@example.test');
+    await page.getByLabel('Message', { exact: true }).fill('Memory-hard proof-of-work');
+    const host = page.locator('.nowo-altcha-type').first();
+    await expect(host).toHaveAttribute('data-altcha-type-workers-url-value', /workers\/$/);
+    await host.locator('altcha-widget label').first().click();
+    await expect(host.locator('[data-altcha-type-target="input"]')).not.toHaveValue('', { timeout: 60000 });
+    await page.getByRole('button', { name: 'Send' }).click();
+    await expect(page.locator('.alert-success')).toBeVisible();
+  });
 });

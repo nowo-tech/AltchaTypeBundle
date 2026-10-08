@@ -34,7 +34,7 @@ final class AltchaVerifierTest extends TestCase
     /**
      * Fast profiles (tiny PBKDF2 cost, fixed counter) so solving stays cheap in tests.
      *
-     * @return array<string, array{cost: int, counter_min: int, counter_max: int, timeout: float, expires: string, floating: bool, hide_logo: bool, hide_footer: bool}>
+     * @return array<string, array{cost: int, counter_min: int, counter_max: int, timeout: float, expires: string, floating: bool, hide_logo: bool, hide_footer: bool, algorithm: string, memory_cost: int|null, parallelism: int|null}>
      */
     private function fastProfiles(): array
     {
@@ -47,6 +47,9 @@ final class AltchaVerifierTest extends TestCase
             'floating'    => false,
             'hide_logo'   => false,
             'hide_footer' => false,
+            'algorithm'   => 'PBKDF2',
+            'memory_cost' => null,
+            'parallelism' => null,
         ];
 
         return ['default' => $profile, 'high' => $profile];
@@ -57,11 +60,11 @@ final class AltchaVerifierTest extends TestCase
         return new AltchaClientFactory(self::HMAC, null, $algorithm);
     }
 
-    private function solve(Challenge $challenge): string
+    private function solve(Challenge $challenge, string $algorithm = 'PBKDF2'): string
     {
         $clientFactory = $this->clientFactory();
         $solution      = $clientFactory->createClient()->solveChallenge(new SolveChallengeOptions(
-            algorithm: $clientFactory->createAlgorithm(),
+            algorithm: $clientFactory->createAlgorithm($algorithm),
             challenge: $challenge,
             timeout: 60.0,
         ));
@@ -245,5 +248,73 @@ final class AltchaVerifierTest extends TestCase
     public function sentinelWithoutBaseUrlUsesLocalVerification(): void
     {
         self::assertTrue($this->verifier(['enabled' => true, 'base_url' => ''])->verify($this->solvedPayload()));
+    }
+
+    /**
+     * Profiles where "default" is PBKDF2 and "memory_hard" is a tiny Argon2id (ALTCHA v3).
+     */
+    private function v3Registry(): AltchaTypeProfileRegistry
+    {
+        $profiles                = $this->fastProfiles();
+        $profiles['memory_hard'] = [
+            'cost'        => 1,
+            'counter_min' => 2,
+            'counter_max' => 2,
+            'algorithm'   => 'ARGON2ID',
+            'memory_cost' => 1024,
+        ] + $profiles['default'];
+
+        return new AltchaTypeProfileRegistry('default', $profiles);
+    }
+
+    private function v3Verifier(AltchaTypeProfileRegistry $registry): AltchaVerifier
+    {
+        return new AltchaVerifier($this->clientFactory(), true, [], new ArrayAdapter(), new NullLogger(), null, null, $registry);
+    }
+
+    #[Test]
+    public function verifiesArgon2idChallengeOfItsProfile(): void
+    {
+        $registry  = $this->v3Registry();
+        $challenge = (new AltchaChallengeFactory($this->clientFactory(), $registry))->create('memory_hard');
+        self::assertSame('ARGON2ID', $challenge->parameters->algorithm);
+        self::assertSame(1024, $challenge->parameters->memoryCost);
+
+        $payload  = $this->solve($challenge, 'ARGON2ID');
+        $verifier = $this->v3Verifier($registry);
+
+        self::assertTrue($verifier->verify($payload, 'memory_hard'));
+        self::assertFalse($verifier->verify($payload, 'memory_hard'), 'Replay must still be rejected.');
+    }
+
+    #[Test]
+    public function usesSignedProfileWhenNoProfileIsExpected(): void
+    {
+        $registry = $this->v3Registry();
+        $payload  = $this->solve((new AltchaChallengeFactory($this->clientFactory(), $registry))->create('memory_hard'), 'ARGON2ID');
+
+        self::assertTrue($this->v3Verifier($registry)->verify($payload));
+    }
+
+    #[Test]
+    public function rejectsAlgorithmOtherThanTheProfileAlgorithm(): void
+    {
+        // Challenge issued while "default" was PBKDF2, verified after "default" switched to Argon2id.
+        $payload = $this->solvedPayload();
+
+        $profiles            = $this->fastProfiles();
+        $profiles['default'] = ['cost' => 1, 'algorithm' => 'ARGON2ID', 'memory_cost' => 1024] + $profiles['default'];
+
+        self::assertFalse($this->v3Verifier(new AltchaTypeProfileRegistry('default', $profiles))->verify($payload, 'default'));
+    }
+
+    #[Test]
+    public function rejectsChallengeOfUnknownSignedProfile(): void
+    {
+        $payload  = $this->solvedPayload('high');
+        $profiles = $this->fastProfiles();
+        unset($profiles['high']);
+
+        self::assertFalse($this->v3Verifier(new AltchaTypeProfileRegistry('default', $profiles))->verify($payload));
     }
 }

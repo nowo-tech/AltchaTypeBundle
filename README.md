@@ -48,6 +48,7 @@ Looking for **Symfony ALTCHA**, **ALTCHA FormType**, **privacy-friendly captcha 
 - ✅ **Challenge endpoint** — `GET /_nowo/altcha/challenge` issues signed challenges (must be `PUBLIC_ACCESS`)
 - ✅ **Named profiles** — `default`, `low`, `high`, `contact`, `invisible` (REQ-CFG-001)
 - ✅ **Server validation** — `AltchaValid` constraint via official `altcha-org/altcha` PHP library (v2, PBKDF2) and the ALTCHA v3 widget
+- ✅ **ALTCHA v3 algorithms** — PBKDF2 (default), SHA, memory-hard **Argon2id** and **Scrypt** per profile (workers shipped)
 - ✅ **Single-use payloads** — replay protection through a PSR-6 cache pool (enabled by default)
 - ✅ **Profile-bound challenges** — the profile is signed into the challenge; cheaper solutions are rejected
 - ✅ **Optional Sentinel** — remote verification (verdict is final; local fallback only on transport errors, opt-in)

@@ -82,4 +82,20 @@ describe('altcha-type-lib', () => {
     widget.dispatchEvent(new CustomEvent('statechange'));
     expect(input.value).toBe('v');
   });
+
+  it('registers memory-hard workers when the container declares a workers URL', () => {
+    const algorithms = new Map<string, () => Worker>();
+    (globalThis as { $altcha?: unknown }).$altcha = { algorithms };
+    const root = document.createElement('div');
+    root.setAttribute('data-altcha-type-workers-url-value', '/workers/');
+    root.innerHTML = `
+      <input data-altcha-type-target="input" type="hidden" value="" />
+      <div data-altcha-type-target="widget"></div>
+    `;
+    document.body.appendChild(root);
+
+    expect(initAltchaContainer(root)).toBe(true);
+    expect([...algorithms.keys()].sort()).toEqual(['ARGON2ID', 'SCRYPT']);
+    delete (globalThis as { $altcha?: unknown }).$altcha;
+  });
 });

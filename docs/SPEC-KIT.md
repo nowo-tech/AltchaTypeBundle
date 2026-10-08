@@ -206,7 +206,7 @@ find src -type f ! -path '*/assets/dist/*' ! -name '*.test.ts' | wc -l
 
 The **Total production sources** row in `code-inventory.md` must match this count.
 
-In **AltchaTypeBundle**, the baseline inventory covers **41/41** production units under `src/` (44 files minus 3 co-located Vitest specs) — see [`specs/001-baseline/code-inventory.md`](../specs/001-baseline/code-inventory.md).
+In **AltchaTypeBundle**, the baseline inventory covers **44/44** production units under `src/` (48 files minus 4 co-located Vitest specs) — see [`specs/001-baseline/code-inventory.md`](../specs/001-baseline/code-inventory.md).
 
 ---
 

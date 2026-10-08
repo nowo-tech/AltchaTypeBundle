@@ -18,7 +18,7 @@ Then open http://localhost:8055.
 |----------|------|-------------|
 | symfony8 | 8055 | Symfony 8.1 + ALTCHA forms, Pentatrion Vite + Stimulus, Web Profiler (dev), FrankenPHP worker mode |
 
-Locale in the URL: `/en`, `/es`, `/it`, `/fr`, `/pt`, `/de`, `/nl`. Use-case query: `?case=contact` (and `low`, `high`, `invisible`, `newsletter`).
+Locale in the URL: `/en`, `/es`, `/it`, `/fr`, `/pt`, `/de`, `/nl`. Use-case query: `?case=contact` (and `low`, `high`, `invisible`, `newsletter`, `memory_hard` — Argon2id, ALTCHA v3).
 
 FrankenPHP setup and worker mode: [docs/DEMO-FRANKENPHP.md](../docs/DEMO-FRANKENPHP.md). E2E: `make -C symfony8 test-e2e`.
 

@@ -2,6 +2,7 @@
  * Binds an ALTCHA widget instance to a Symfony hidden input.
  */
 
+import { registerAlgorithmWorkers } from './altcha-workers';
 import { getLogger } from './logger';
 
 export type AltchaTypeContainer = HTMLElement & {
@@ -24,6 +25,12 @@ export function initAltchaContainer(root: HTMLElement): boolean {
   if (!input || !widget) {
     getLogger().debug('init skipped: missing input or widget');
     return false;
+  }
+
+  // ALTCHA v3 memory-hard profiles (ARGON2ID / SCRYPT) need their workers registered before solving.
+  const workersUrl = root.getAttribute('data-altcha-type-workers-url-value');
+  if (workersUrl) {
+    getLogger().debug('algorithm workers registered', registerAlgorithmWorkers(workersUrl));
   }
 
   const onVerified = (event: Event): void => {

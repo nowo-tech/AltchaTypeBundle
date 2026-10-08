@@ -37,6 +37,12 @@
 - **When** a payload is submitted,
 - **Then** Sentinel's verdict is final; **and when** Sentinel is unreachable, **then** verification fails unless `fallback_local: true`, in which case local verification runs.
 
+### US-06 — Memory-hard proof-of-work (P2)
+
+- **Given** a profile with `algorithm: ARGON2ID` (or `SCRYPT`) and the PHP extension installed,
+- **When** the widget solves the challenge,
+- **Then** the browser loads the bundle's Argon2id worker and the server verifies with Argon2id only.
+
 ### US-05 — Frontend integration choice (P2)
 
 - **Given** `include_script: true` (default), **then** the widget template emits the bundle CSS/JS from the `nowo_altcha_type` asset package;
@@ -49,6 +55,7 @@
 - **FR-DI-1** — `NowoAltchaTypeBundle` registers `AltchaTypeExtension` (alias `nowo_altcha_type`) and `TwigPathsPass`.
 - **FR-DI-2** — `Configuration` is strict: `default_profile` must exist in `profiles`; `form_theme` is a closed list; profile `cost` ≤ 100000, counters ≤ 1000000, `expires` a relative future offset ≤ 1 day; Sentinel `base_url` must be `https://` when enabled, `timeout` 0.5–10 s, `retries` 0–2.
 - **FR-DI-3** — Built-in profiles `default`, `low`, `high`, `contact`, `invisible` are merged under user profiles.
+- **FR-DI-7** — Profile `algorithm` (`PBKDF2|SHA|ARGON2ID|SCRYPT`) with per-algorithm defaults and bounds; missing `ext-sodium` / `ext-scrypt` rejects the configuration.
 - **FR-DI-4** — `prepend()` adds the matching bundle form theme to `twig.form_themes` and the asset package `nowo_altcha_type` (`/bundles/nowoaltchatype`).
 - **FR-DI-5** — `replay_protection` (default enabled, `cache.app`) wires a PSR-6 pool into `AltchaVerifier`; disabled → `null`.
 - **FR-DI-6** — `TwigPathsPass` appends `Resources/views` under namespace `NowoAltchaTypeBundle` so app overrides win.
@@ -66,6 +73,7 @@
 - **FR-SVC-4** — With a replay pool, the first valid use stores `sha256(signature)` until expiry; later uses are rejected.
 - **FR-SVC-5** — Sentinel: verdict final; transport failures (exception, non-2xx/400, invalid body — detected by `TransportTrackingHttpClient`) fall back locally only with `fallback_local`.
 - **FR-SVC-6** — `enable: false` accepts every payload.
+- **FR-SVC-7** — ALTCHA v3 algorithms: `AltchaClientFactory::createAlgorithm()` builds PBKDF2 / SHA / Argon2id / Scrypt; challenges carry the profile algorithm and `memoryCost`/`parallelism`; the verifier derives with the profile algorithm (expected or signed profile) and rejects any other challenge algorithm or unknown profile.
 
 ### Profiles (`FR-PROF-*`)
 
@@ -90,7 +98,9 @@
 - **FR-ASSET-2** — The Stimulus controller binds on connect and unbinds on disconnect.
 - **FR-ASSET-3** — The IIFE boots once per page and binds containers added later (MutationObserver).
 - **FR-ASSET-4** — Debug logging only when enabled; wrapper CSS hides the input.
+- **FR-ASSET-5** — `registerAlgorithmWorkers()` registers Argon2id / Scrypt workers from `data-altcha-type-workers-url-value` without overriding existing registrations.
 - **FR-BUILD-1** — `public/altcha-type.js` is built by Vite from `assets/src/altcha-type.ts` (bundles `altcha` v3); `public/altcha-type.css` is copied from `assets/css/altcha-type.css`.
+- **FR-BUILD-2** — `public/workers/argon2id.js` and `public/workers/scrypt.js` are copied from the `altcha` package (`dist/workers/`) by `pnpm run build`.
 
 ### Translations (`FR-I18N-*`)
 
@@ -101,7 +111,8 @@
 - **SC-1** — `make coverage-check`: 100% PHP lines; `make assets-test`: 100% TS (bootstrap `altcha-type.ts` excluded).
 - **SC-2** — `make phpstan` (level 8, `ignoreErrors: []`) and `make igor` clean.
 - **SC-3** — Demo e2e (`make -C demo/symfony8 test-e2e`) solves a real challenge and passes server verification.
-- **SC-4** — Inventory maps **41/41** production units under `src/`.
+- **SC-4** — Inventory maps **44/44** production units under `src/`.
+- **SC-5** — Demo e2e solves an **Argon2id** (ALTCHA v3) challenge in the browser and passes server verification.
 
 ## Non-goals
 

@@ -15,7 +15,7 @@ make up
 
 **Language switch:** The locale is in the URL (`/en`, `/es`, `/it`, `/fr`, `/pt`, `/de`, `/nl`). Use the **Language** dropdown in the navbar to switch, or go directly to e.g. `http://localhost:8055/en`.
 
-**Use cases:** `?case=contact` (and `low`, `high`, `invisible`, `newsletter`). Which profile to use where: [docs/USE-CASES.md](../../docs/USE-CASES.md).
+**Use cases:** `?case=contact` (and `low`, `high`, `invisible`, `newsletter`, `memory_hard` — Argon2id, ALTCHA v3). Which profile to use where: [docs/USE-CASES.md](../../docs/USE-CASES.md).
 
 ## Makefile targets
 

@@ -125,6 +125,12 @@ final class ConfigurationTest extends TestCase
         yield 'absolute expiry' => [['profiles' => ['default' => ['expires' => '2030-01-01']]], 'expires must be a relative future offset'];
         yield 'past expiry' => [['profiles' => ['default' => ['expires' => '+0 seconds']]], 'expires must be a relative future offset'];
         yield 'expiry above one day' => [['profiles' => ['default' => ['expires' => '+2 days']]], 'expires must be a relative future offset'];
+        yield 'argon2 cost too high' => [['profiles' => ['default' => ['algorithm' => 'ARGON2ID', 'cost' => 11]]], 'ARGON2ID cost must be between 1 and 10'];
+        yield 'argon2 memory too high' => [['profiles' => ['default' => ['algorithm' => 'ARGON2ID', 'cost' => 2, 'memory_cost' => 70000]]], 'ARGON2ID memory_cost must be between'];
+        yield 'argon2 parallelism' => [['profiles' => ['default' => ['algorithm' => 'ARGON2ID', 'cost' => 2, 'parallelism' => 2]]], 'ARGON2ID does not support parallelism'];
+        yield 'scrypt without extension' => [['profiles' => ['default' => ['algorithm' => 'SCRYPT', 'cost' => 16384]]], 'algorithm SCRYPT requires ext-scrypt'];
+        yield 'pbkdf2 with memory_cost' => [['profiles' => ['default' => ['memory_cost' => 1024]]], 'PBKDF2 does not use memory_cost / parallelism'];
+        yield 'unknown algorithm' => [['profiles' => ['default' => ['algorithm' => 'MD5']]], 'algorithm'];
         yield 'unparseable expiry' => [['profiles' => ['default' => ['expires' => '+not a date']]], 'expires must be a relative future offset'];
     }
 
@@ -139,5 +145,35 @@ final class ConfigurationTest extends TestCase
         $this->expectExceptionMessage($message);
 
         (new Processor())->processConfiguration(new Configuration(), [$config]);
+    }
+
+    #[Test]
+    public function argon2idProfileGetsDefaultMemoryCost(): void
+    {
+        $processed = (new Processor())->processConfiguration(new Configuration(), [[
+            'profiles' => ['memory_hard' => ['algorithm' => 'ARGON2ID', 'cost' => 2, 'counter_min' => 5, 'counter_max' => 20]],
+        ]]);
+
+        self::assertSame('ARGON2ID', $processed['profiles']['memory_hard']['algorithm']);
+        self::assertSame(19456, $processed['profiles']['memory_hard']['memory_cost']);
+        self::assertNull($processed['profiles']['memory_hard']['parallelism']);
+        self::assertSame('PBKDF2', $processed['profiles']['default']['algorithm']);
+    }
+
+    #[Test]
+    public function scryptDefaultsAndBounds(): void
+    {
+        self::assertSame(
+            ['algorithm' => 'SCRYPT', 'memory_cost' => 8, 'parallelism' => 1],
+            Configuration::applyAlgorithmDefaults(['algorithm' => 'SCRYPT']),
+        );
+
+        $valid = ['cost' => 16384, 'algorithm' => 'SCRYPT', 'memory_cost' => 8, 'parallelism' => 1];
+        self::assertNull(Configuration::algorithmBoundsError($valid));
+        self::assertStringContainsString('power of two', (string) Configuration::algorithmBoundsError(['cost' => 10000] + $valid));
+        self::assertStringContainsString('memory_cost (r)', (string) Configuration::algorithmBoundsError(['memory_cost' => 32] + $valid));
+        self::assertStringContainsString('parallelism (p)', (string) Configuration::algorithmBoundsError(['parallelism' => 8] + $valid));
+        self::assertNull(Configuration::algorithmBoundsError(['cost' => 2, 'algorithm' => 'ARGON2ID', 'memory_cost' => 19456, 'parallelism' => null]));
+        self::assertNull(Configuration::algorithmExtensionError('PBKDF2'));
     }
 }

@@ -30,6 +30,10 @@ demo:
       nav: 'Newsletter'
       title: 'Newsletter signup'
       body: 'Minimal email form with a compact floating Altcha field.'
+    memory_hard:
+      nav: 'Argon2id'
+      title: 'Memory-hard (Argon2id)'
+      body: "Proof-of-work memory-hard di ALTCHA v3: resiste all'accelerazione GPU/ASIC."
   fields:
     name: 'Name'
     email: 'Email'

@@ -70,6 +70,8 @@ application.register('altcha-type', AltchaTypeController);
 
 The Symfony 8 demo (`demo/symfony8`) uses exactly this setup with Pentatrion Vite.
 
+Argon2id / Scrypt profiles (ALTCHA v3): the controller registers the workers from `data-altcha-type-workers-url-value` (bundle asset package, `assets:install` required). If you prefer bundling them yourself, register them before the widget solves (`$altcha.algorithms.set('ARGON2ID', () => new Worker(...))`, see the ALTCHA widget docs); existing registrations are kept.
+
 ## Validation outside forms
 
 ```php

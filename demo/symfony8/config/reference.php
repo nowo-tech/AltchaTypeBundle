@@ -803,7 +803,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         retries?: int|Param, // Default: 1
  *         fallback_local?: bool|Param, // When true, a Sentinel transport error (not a rejection) falls back to local verification. // Default: false
  *     },
- *     profiles?: array<string, array{ // Default: {"default":{"cost":5000,"counter_min":5000,"counter_max":10000,"timeout":30.0,"expires":"+10 minutes","floating":false,"hide_logo":false,"hide_footer":false},"low":{"cost":2000,"counter_min":1000,"counter_max":5000,"timeout":20.0,"expires":"+10 minutes","floating":false,"hide_logo":false,"hide_footer":false},"high":{"cost":15000,"counter_min":10000,"counter_max":50000,"timeout":60.0,"expires":"+5 minutes","floating":false,"hide_logo":false,"hide_footer":false},"contact":{"cost":5000,"counter_min":5000,"counter_max":15000,"timeout":30.0,"expires":"+15 minutes","floating":true,"hide_logo":false,"hide_footer":false},"invisible":{"cost":5000,"counter_min":5000,"counter_max":10000,"timeout":30.0,"expires":"+10 minutes","floating":true,"hide_logo":true,"hide_footer":true}}
+ *     profiles?: array<string, array{ // Default: {"default":{"cost":5000,"counter_min":5000,"counter_max":10000,"timeout":30.0,"expires":"+10 minutes","floating":false,"hide_logo":false,"hide_footer":false,"algorithm":"PBKDF2","memory_cost":null,"parallelism":null},"low":{"cost":2000,"counter_min":1000,"counter_max":5000,"timeout":20.0,"expires":"+10 minutes","floating":false,"hide_logo":false,"hide_footer":false,"algorithm":"PBKDF2","memory_cost":null,"parallelism":null},"high":{"cost":15000,"counter_min":10000,"counter_max":50000,"timeout":60.0,"expires":"+5 minutes","floating":false,"hide_logo":false,"hide_footer":false,"algorithm":"PBKDF2","memory_cost":null,"parallelism":null},"contact":{"cost":5000,"counter_min":5000,"counter_max":15000,"timeout":30.0,"expires":"+15 minutes","floating":true,"hide_logo":false,"hide_footer":false,"algorithm":"PBKDF2","memory_cost":null,"parallelism":null},"invisible":{"cost":5000,"counter_min":5000,"counter_max":10000,"timeout":30.0,"expires":"+10 minutes","floating":true,"hide_logo":true,"hide_footer":true,"algorithm":"PBKDF2","memory_cost":null,"parallelism":null}}
  *         cost?: int|Param, // Default: 5000
  *         counter_min?: int|Param, // Default: 5000
  *         counter_max?: int|Param, // Default: 10000
@@ -812,6 +812,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         floating?: bool|Param, // Default: false
  *         hide_logo?: bool|Param, // Default: false
  *         hide_footer?: bool|Param, // Default: false
+ *         algorithm?: "PBKDF2"|"SHA"|"ARGON2ID"|"SCRYPT"|Param, // ALTCHA v3 key derivation: PBKDF2 (default), SHA, ARGON2ID (ext-sodium), SCRYPT (ext-scrypt). // Default: "PBKDF2"
+ *         memory_cost?: int|Param, // ARGON2ID: memory in KiB (1024-65536, default 19456). SCRYPT: block size r (1-16, default 8). // Default: null
+ *         parallelism?: int|Param, // SCRYPT only: parallelism p (1-4, default 1). // Default: null
  *     }>,
  * }
  * @psalm-type NowoHotReloadConfig = array{

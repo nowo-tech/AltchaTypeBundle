@@ -19,7 +19,10 @@ use function sprintf;
  *     expires: string,
  *     floating: bool,
  *     hide_logo: bool,
- *     hide_footer: bool
+ *     hide_footer: bool,
+ *     algorithm: string,
+ *     memory_cost: int|null,
+ *     parallelism: int|null
  * }
  */
 final class AltchaTypeProfileRegistry

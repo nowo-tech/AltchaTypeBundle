@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace Nowo\AltchaTypeBundle\Service;
 
+use AltchaOrg\Altcha\Algorithm\Argon2id;
+use AltchaOrg\Altcha\Algorithm\DeriveKeyInterface;
 use AltchaOrg\Altcha\Algorithm\Pbkdf2;
+use AltchaOrg\Altcha\Algorithm\Scrypt;
+use AltchaOrg\Altcha\Algorithm\Sha;
+use AltchaOrg\Altcha\Algorithm\ShaAlgorithm;
 use AltchaOrg\Altcha\Altcha;
 use AltchaOrg\Altcha\HmacAlgorithm;
 use InvalidArgumentException;
@@ -55,15 +60,25 @@ final class AltchaClientFactory
     }
 
     /**
-     * Builds the PBKDF2 key-derivation algorithm.
+     * Builds the ALTCHA v3 key-derivation algorithm (PBKDF2 by default).
      *
-     * @throws InvalidArgumentException When the HMAC algorithm is unsupported
+     * PBKDF2 and SHA use the configured `hmac_algorithm` as hash; ARGON2ID and SCRYPT are memory-hard.
      *
-     * @return Pbkdf2 PBKDF2 algorithm
+     * @param string $algorithm `PBKDF2`, `SHA`, `ARGON2ID` or `SCRYPT`
+     *
+     * @throws InvalidArgumentException When the algorithm or hash is unsupported
+     *
+     * @return DeriveKeyInterface Key-derivation algorithm
      */
-    public function createAlgorithm(): Pbkdf2
+    public function createAlgorithm(string $algorithm = 'PBKDF2'): DeriveKeyInterface
     {
-        return new Pbkdf2($this->resolveHmacAlgorithm());
+        return match ($algorithm) {
+            'PBKDF2'   => new Pbkdf2($this->resolveHmacAlgorithm()),
+            'SHA'      => new Sha(ShaAlgorithm::from($this->resolveHmacAlgorithm()->value)),
+            'ARGON2ID' => new Argon2id(),
+            'SCRYPT'   => new Scrypt(),
+            default    => throw new InvalidArgumentException(sprintf('Unsupported algorithm "%s".', $algorithm)),
+        };
     }
 
     /**

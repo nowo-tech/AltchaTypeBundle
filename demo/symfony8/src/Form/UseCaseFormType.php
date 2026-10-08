@@ -20,11 +20,12 @@ final class UseCaseFormType extends AbstractType
         $case = $options['use_case'];
 
         match ($case) {
-            'low'        => $this->buildWithProfile($builder, 'low'),
-            'high'       => $this->buildWithProfile($builder, 'high'),
-            'invisible'  => $this->buildWithProfile($builder, 'invisible'),
-            'newsletter' => $this->buildNewsletter($builder),
-            default      => $this->buildWithProfile($builder, 'contact'),
+            'low'         => $this->buildWithProfile($builder, 'low'),
+            'high'        => $this->buildWithProfile($builder, 'high'),
+            'invisible'   => $this->buildWithProfile($builder, 'invisible'),
+            'newsletter'  => $this->buildNewsletter($builder),
+            'memory_hard' => $this->buildWithProfile($builder, 'memory_hard'),
+            default       => $this->buildWithProfile($builder, 'contact'),
         };
     }
 
@@ -40,6 +41,7 @@ final class UseCaseFormType extends AbstractType
             'high',
             'invisible',
             'newsletter',
+            'memory_hard',
         ]);
     }
 

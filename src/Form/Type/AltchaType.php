@@ -107,6 +107,7 @@ final class AltchaType extends AbstractType
         $view->vars['altcha_floating']       = $options['floating'] ?? $profile['floating'];
         $view->vars['altcha_hide_logo']      = $options['hide_logo'] ?? $profile['hide_logo'];
         $view->vars['altcha_hide_footer']    = $options['hide_footer'] ?? $profile['hide_footer'];
+        $view->vars['altcha_algorithm']      = $profile['algorithm'];
         $view->vars['altcha_include_script'] = $this->includeScript;
         $view->vars['altcha_use_stimulus']   = $this->useStimulus;
         $view->vars['altcha_debug']          = $this->debug;

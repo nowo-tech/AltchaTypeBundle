@@ -8,6 +8,14 @@ nowo_altcha_type:
   debug: true
   replay_protection:
     cache_pool: cache.app
+  profiles:
+    # ALTCHA v3 memory-hard proof-of-work (needs ext-sodium on the server).
+    memory_hard:
+      algorithm: ARGON2ID
+      cost: 2
+      memory_cost: 19456
+      counter_min: 5
+      counter_max: 20
 
 when@test:
   nowo_altcha_type:

@@ -24,6 +24,7 @@ final class DemoController extends AbstractController
         'high',
         'invisible',
         'newsletter',
+        'memory_hard',
     ];
 
     /** @var list<string> */
