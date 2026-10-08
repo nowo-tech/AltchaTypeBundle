@@ -59,7 +59,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/altcha-type-bundle",
-                "reference": "0efae4661dfb11344dd7910a1db2f78c3919c0d1"
+                "reference": "0aa0a0eda72dc96d26d73bf79bf1e66c0f04a0ce"
             },
             "require": {
                 "altcha-org/altcha": "^2.3",
@@ -97,6 +97,8 @@
                 "vincentlanglet/twig-cs-fixer": "^4.0"
             },
             "suggest": {
+                "ext-scrypt": "Required for ALTCHA v3 SCRYPT profiles (https://github.com/DomBlack/php-scrypt).",
+                "ext-sodium": "Required for ALTCHA v3 ARGON2ID profiles.",
                 "pentatrion/vite-bundle": "Compile the Stimulus controller with Pentatrion Vite in the host app (Twig vite_entry_* helpers). The Symfony 8 demo uses this stack with pnpm."
             },
             "type": "symfony-bundle",
