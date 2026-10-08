@@ -1,0 +1,6 @@
+form:
+  label: 'Verificação humana'
+  help: 'Conclua a verificação antes de enviar o formulário.'
+  error:
+    invalid: 'A verificação humana falhou. Tente novamente.'
+    required: 'Conclua a verificação humana.'

@@ -1,0 +1,4 @@
+{# Form theme for AltchaType. Only widget blocks — do not `{% use %}` a Symfony layout. #}
+{% block nowo_altcha_type_widget %}
+    {{ include('@NowoAltchaTypeBundle/Form/_altcha_type_widget.html.twig', {widget_attributes: block('widget_attributes')}) }}
+{% endblock %}

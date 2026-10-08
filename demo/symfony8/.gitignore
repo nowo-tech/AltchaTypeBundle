@@ -1,0 +1,38 @@
+# Local environment (do not version secrets)
+/.env
+/.env.dev
+/.env.local
+/.env.*.local
+
+# Dependencies and build artifacts
+/vendor/
+/node_modules/
+/.pnpm-store/
+/public/build/
+/public/bundles/
+/var/
+
+# Logs
+*.log
+
+# Archives / compressed
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> pentatrion/vite-bundle ###
+/node_modules/
+/public/build/
+###< pentatrion/vite-bundle ###

@@ -1,0 +1,6 @@
+form:
+  label: 'Verifica umana'
+  help: 'Completa la verifica prima di inviare il modulo.'
+  error:
+    invalid: 'Verifica umana non riuscita. Riprova.'
+    required: 'Completa la verifica umana.'

@@ -1,0 +1,3 @@
+nowo_altcha_type:
+    resource: '@NowoAltchaTypeBundle/Controller/'
+    type: attribute

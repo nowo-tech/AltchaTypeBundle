@@ -1,0 +1,27 @@
+{
+  "name": "altcha-type-demo-symfony8",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.15.0",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.3",
+    "vite": "^6.4.3",
+    "vite-plugin-symfony": "^8.2.4"
+  },
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "altcha": "^3.2.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

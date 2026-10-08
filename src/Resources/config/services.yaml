@@ -1,0 +1,39 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Nowo\AltchaTypeBundle\Twig\NowoAltchaTypeTwigExtension: ~
+
+  Nowo\AltchaTypeBundle\Profile\AltchaTypeProfileRegistry:
+    arguments:
+      $defaultProfile: '%nowo_altcha_type.default_profile%'
+      $profiles: '%nowo_altcha_type.profiles%'
+
+  Nowo\AltchaTypeBundle\Service\AltchaClientFactory:
+    arguments:
+      $hmacSignature: '%nowo_altcha_type.hmac_signature%'
+      $hmacKeySignature: '%nowo_altcha_type.hmac_key_signature%'
+      $hmacAlgorithm: '%nowo_altcha_type.hmac_algorithm%'
+
+  Nowo\AltchaTypeBundle\Service\AltchaChallengeFactory: ~
+
+  # $replayCache is set by AltchaTypeExtension from replay_protection.cache_pool.
+  Nowo\AltchaTypeBundle\Service\AltchaVerifier:
+    arguments:
+      $enable: '%nowo_altcha_type.enable%'
+      $sentinel: '%nowo_altcha_type.sentinel%'
+      $replayCache: null
+      $sentinelHttpClient: null
+
+  Nowo\AltchaTypeBundle\Controller\AltchaChallengeController: ~
+
+  Nowo\AltchaTypeBundle\Form\Type\AltchaType:
+    arguments:
+      $enable: '%nowo_altcha_type.enable%'
+      $includeScript: '%nowo_altcha_type.include_script%'
+      $useStimulus: '%nowo_altcha_type.use_stimulus%'
+      $debug: '%nowo_altcha_type.debug%'
+
+  Nowo\AltchaTypeBundle\Validator\Constraints\AltchaValidValidator: ~

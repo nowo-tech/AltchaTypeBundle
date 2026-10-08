@@ -1,0 +1,119 @@
+{
+    "name": "nowo-tech/altcha-type-bundle",
+    "description": "Symfony FormType for ALTCHA — privacy-friendly, self-hosted proof-of-work CAPTCHA alternative for forms (GDPR-friendly, no cookies).",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "keywords": [
+        "symfony",
+        "symfony-bundle",
+        "form",
+        "altcha",
+        "captcha",
+        "anti-spam",
+        "proof-of-work",
+        "gdpr",
+        "stimulus",
+        "vite"
+    ],
+    "homepage": "https://github.com/nowo-tech/AltchaTypeBundle",
+    "support": {
+        "issues": "https://github.com/nowo-tech/AltchaTypeBundle/issues",
+        "source": "https://github.com/nowo-tech/AltchaTypeBundle",
+        "docs": "https://github.com/nowo-tech/AltchaTypeBundle#readme"
+    },
+    "authors": [
+        {
+            "name": "Nowo.tech",
+            "homepage": "https://nowo.tech"
+        }
+    ],
+    "require": {
+        "php": ">=8.2 <8.6",
+        "altcha-org/altcha": "^2.3",
+        "psr/cache": "^1.0 || ^2.0 || ^3.0",
+        "psr/clock": "^1.0",
+        "psr/log": "^1.1 || ^2.0 || ^3.0",
+        "symfony/asset": "^6.0 || ^7.0 || ^8.0",
+        "symfony/clock": "^6.3 || ^7.0 || ^8.0",
+        "symfony/config": "^6.0 || ^7.0 || ^8.0",
+        "symfony/dependency-injection": "^6.0 || ^7.0 || ^8.0",
+        "symfony/form": "^6.0 || ^7.0 || ^8.0",
+        "symfony/framework-bundle": "^6.0 || ^7.0 || ^8.0",
+        "symfony/http-foundation": "^6.0 || ^7.0 || ^8.0",
+        "symfony/http-kernel": "^6.0 || ^7.0 || ^8.0",
+        "symfony/options-resolver": "^6.0 || ^7.0 || ^8.0",
+        "symfony/routing": "^6.0 || ^7.0 || ^8.0",
+        "symfony/service-contracts": "^3.0",
+        "symfony/translation": "^6.0 || ^7.0 || ^8.0",
+        "symfony/twig-bundle": "^6.0 || ^7.0 || ^8.0",
+        "symfony/validator": "^6.0 || ^7.0 || ^8.0",
+        "symfony/yaml": "^6.0 || ^7.0 || ^8.0",
+        "twig/extra-bundle": "^3.12",
+        "twig/string-extra": "^3.12"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "igor-php/igor-php": "^0.10.0",
+        "nowo-tech/phpstan-frankenphp": "^1.0",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-symfony": "^2.0",
+        "phpunit/phpunit": "^10.0",
+        "rector/rector": "^2.0",
+        "vincentlanglet/twig-cs-fixer": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nowo\\AltchaTypeBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nowo\\AltchaTypeBundle\\Tests\\": "tests/"
+        }
+    },
+    "archive": {
+        "exclude": [
+            "/demo",
+            "/.cursor"
+        ]
+    },
+    "suggest": {
+        "pentatrion/vite-bundle": "Compile the Stimulus controller with Pentatrion Vite in the host app (Twig vite_entry_* helpers). The Symfony 8 demo uses this stack with pnpm."
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "cs-check": "php-cs-fixer fix --dry-run --diff",
+        "cs-fix": "php-cs-fixer fix",
+        "test": "phpunit --color=always",
+        "test-coverage": "phpunit --color=always --coverage-text --coverage-html=coverage --coverage-clover=coverage.xml",
+        "rector": "rector process",
+        "rector-dry": "rector process --dry-run --no-progress-bar",
+        "phpstan": "phpstan analyse --memory-limit=512M",
+        "qa": [
+            "@cs-check",
+            "@test"
+        ],
+        "twig:lint": "twig-cs-fixer lint --config=.twig-cs-fixer.php",
+        "twig:fix": "twig-cs-fixer fix --config=.twig-cs-fixer.php",
+        "twig:fix:check": "twig-cs-fixer lint --config=.twig-cs-fixer.php --fix",
+        "igor": "igor-php --no-agent ."
+    },
+    "scripts-descriptions": {
+        "cs-check": "Check code style with PHP-CS-Fixer",
+        "cs-fix": "Fix code style with PHP-CS-Fixer",
+        "test": "Run PHPUnit tests",
+        "test-coverage": "Run PHPUnit tests with code coverage",
+        "rector": "Apply Rector refactoring",
+        "rector-dry": "Run Rector in dry-run mode",
+        "phpstan": "Run PHPStan static analysis",
+        "qa": "Run all quality assurance checks",
+        "igor": "Run Igor FrankenPHP worker-state audit (REQ-CS-008)"
+    }
+}

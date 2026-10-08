@@ -1,0 +1,40 @@
+demo:
+  title: 'Altcha Type'
+  brand: 'AltchaType demo'
+  page_title: 'ALTCHA FormType — privacy-friendly CAPTCHA'
+  heading: 'ALTCHA for Symfony forms'
+  description: 'Self-hosted proof-of-work verification. No cookies, no fingerprinting, GDPR-friendly.'
+  language: 'Language'
+  language_switch_hint: 'Language:'
+  form_submitted: 'Accepted. Payload: %data%'
+  close: 'Close'
+  toggle_navigation: 'Toggle navigation'
+  case:
+    contact:
+      nav: 'Contact'
+      title: 'Contact form'
+      body: 'Standard contact form protected with the contact profile (floating widget).'
+    low:
+      nav: 'Low'
+      title: 'Low difficulty'
+      body: 'Lighter proof-of-work for low-risk endpoints.'
+    high:
+      nav: 'High'
+      title: 'High difficulty'
+      body: 'Heavier proof-of-work for high-abuse endpoints.'
+    invisible:
+      nav: 'Invisible'
+      title: 'Invisible style'
+      body: 'Floating widget with logo and footer hidden.'
+    newsletter:
+      nav: 'Newsletter'
+      title: 'Newsletter signup'
+      body: 'Minimal email form with a compact floating Altcha field.'
+  fields:
+    name: 'Name'
+    email: 'Email'
+    message: 'Message'
+    submit: 'Send'
+    subscribe: 'Subscribe'
+
+demo.symfony_version: 'Symfony 8.1'

@@ -1,0 +1,6 @@
+form:
+  label: 'Human verification'
+  help: 'Complete the verification before submitting the form.'
+  error:
+    invalid: 'Human verification failed. Please try again.'
+    required: 'Please complete the human verification.'

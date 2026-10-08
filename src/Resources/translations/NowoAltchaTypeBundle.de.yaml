@@ -1,0 +1,6 @@
+form:
+  label: 'Menschliche Überprüfung'
+  help: 'Schließen Sie die Überprüfung ab, bevor Sie das Formular absenden.'
+  error:
+    invalid: 'Die menschliche Überprüfung ist fehlgeschlagen. Bitte erneut versuchen.'
+    required: 'Bitte schließen Sie die menschliche Überprüfung ab.'

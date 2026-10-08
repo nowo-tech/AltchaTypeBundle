@@ -1,0 +1,12 @@
+{
+    "bundles": {
+        "Nowo\\AltchaTypeBundle\\NowoAltchaTypeBundle": ["all"]
+    },
+    "copy-from-recipe": {
+        "config/": "%CONFIG_DIR%/"
+    },
+    "env": {
+        "#1": "Dedicated HMAC secret used to sign ALTCHA challenges (min. 32 random characters)",
+        "ALTCHA_HMAC_SIGNATURE": "%generate(secret)%"
+    }
+}

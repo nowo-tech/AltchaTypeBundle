@@ -1,0 +1,6 @@
+form:
+  label: 'Menselijke verificatie'
+  help: 'Voltooi de verificatie voordat u het formulier verzendt.'
+  error:
+    invalid: 'Menselijke verificatie mislukt. Probeer het opnieuw.'
+    required: 'Voltooi de menselijke verificatie.'

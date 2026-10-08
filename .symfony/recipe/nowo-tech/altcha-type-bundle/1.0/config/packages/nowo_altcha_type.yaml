@@ -1,0 +1,12 @@
+nowo_altcha_type:
+    enable: true
+    hmac_signature: '%env(ALTCHA_HMAC_SIGNATURE)%'
+    default_profile: default
+    form_theme: form_div_layout.html.twig
+    # Single-use payloads; use a shared pool (e.g. Redis) when running several hosts.
+    replay_protection:
+        cache_pool: cache.app
+
+when@test:
+    nowo_altcha_type:
+        enable: false

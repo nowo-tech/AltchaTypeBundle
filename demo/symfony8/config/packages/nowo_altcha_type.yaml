@@ -1,0 +1,14 @@
+nowo_altcha_type:
+  enable: true
+  hmac_signature: '%env(ALTCHA_HMAC_SIGNATURE)%'
+  default_profile: default
+  form_theme: 'bootstrap_5_layout.html.twig'
+  include_script: false
+  use_stimulus: true
+  debug: true
+  replay_protection:
+    cache_pool: cache.app
+
+when@test:
+  nowo_altcha_type:
+    enable: false

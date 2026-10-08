@@ -1,0 +1,6 @@
+# CODEOWNERS for AltchaTypeBundle
+* @HecFranco
+/.github/ @HecFranco
+/src/ @HecFranco
+/tests/ @HecFranco
+/.scripts/ @HecFranco

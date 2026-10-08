@@ -1,0 +1,44 @@
+{#
+  Shared ALTCHA widget for AltchaType.
+  The official <altcha-widget> (v3) posts its own `<id>_widget` input (outside the Symfony form array, ignored);
+  the hidden Symfony input receives the payload via JS (verified/statechange events). It is always rendered
+  empty: a submitted payload is single-use (replay protection), so a re-rendered form must be solved again.
+  include_script=true (and use_stimulus=false): emits altcha-type.css / altcha-type.js from the
+  `nowo_altcha_type` asset package (the IIFE guards against double boot).
+  use_stimulus=true: emits data-controller="altcha-type"; the host app registers the controller — see docs/USAGE.md.
+#}
+{% set widget_attributes = widget_attributes|default('') %}
+{% if form.vars.altcha_enable %}
+{% if form.vars.altcha_include_script and not form.vars.altcha_use_stimulus %}
+<link rel="stylesheet" href="{{ asset('altcha-type.css', 'nowo_altcha_type') }}" />
+<script src="{{ asset('altcha-type.js', 'nowo_altcha_type') }}" defer></script>
+{% endif %}
+<div
+    class="nowo-altcha-type"
+    {% if form.vars.altcha_use_stimulus %}data-controller="altcha-type"{% endif %}
+    data-altcha-type-debug-value="{{ form.vars.altcha_debug ? '1' : '0' }}"
+    data-altcha-type-challenge-url-value="{{ form.vars.altcha_challenge_url|e('html_attr') }}"
+>
+    <input
+        type="hidden"
+        {{ widget_attributes|raw }}
+        class="nowo-altcha-type__input"
+        value=""
+        autocomplete="off"
+        data-altcha-type-target="input"
+        tabindex="-1"
+        aria-hidden="true"
+    />
+    <altcha-widget
+        class="nowo-altcha-type__widget"
+        challenge="{{ form.vars.altcha_challenge_url|e('html_attr') }}"
+        name="{{ (id ~ '_widget')|e('html_attr') }}"
+        display="{{ form.vars.altcha_floating ? 'floating' : 'standard' }}"
+        configuration="{{ {hideLogo: form.vars.altcha_hide_logo, hideFooter: form.vars.altcha_hide_footer}|json_encode|e('html_attr') }}"
+        data-altcha-type-target="widget"
+    ></altcha-widget>
+</div>
+{% else %}
+    {# enable=false (e.g. test): skip widget; verifier always accepts. #}
+    <input type="hidden" {{ widget_attributes|raw }} value="disabled" />
+{% endif %}
