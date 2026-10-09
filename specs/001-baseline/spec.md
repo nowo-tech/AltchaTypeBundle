@@ -91,6 +91,7 @@
 - **FR-TWIG-1** — `nowo_altcha_type_asset_path()` sanitizes asset filenames; `nowo_altcha_type_asset_package()` returns `nowo_altcha_type`.
 - **FR-TWIG-2** — The widget partial renders the wrapper, an empty hidden input, and `<altcha-widget challenge display configuration>`; emits asset tags when `include_script && !use_stimulus`; `data-controller` when `use_stimulus`; a `disabled` placeholder when `enable: false`.
 - **FR-TWIG-3** — One theme per supported Symfony layout defines `nowo_altcha_type_widget` by including the partial.
+- **FR-TWIG-4** — CSP: the emitted `<script src>` carries `nonce` from request attribute `csp_nonce` when set (ALTCHA copies it onto its injected `<style>`); templates contain no inline `<script>`/`<style>` without nonce and no inline event handlers (`InlineBlocksDeclareNonceTest`).
 
 ### Assets (`FR-ASSET-*`) and build outputs (`FR-BUILD-*`)
 

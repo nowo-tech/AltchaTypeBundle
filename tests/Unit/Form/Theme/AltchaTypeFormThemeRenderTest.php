@@ -11,6 +11,7 @@ use Nowo\AltchaTypeBundle\Twig\NowoAltchaTypeTwigExtension;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\Twig\AppVariable;
 use Symfony\Bridge\Twig\Extension\AssetExtension;
 use Symfony\Bridge\Twig\Extension\FormExtension;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
@@ -24,6 +25,8 @@ use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormRenderer;
 use Symfony\Component\Form\Forms;
 use Symfony\Component\Form\PreloadedExtension;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\Validation;
@@ -72,6 +75,29 @@ final class AltchaTypeFormThemeRenderTest extends TestCase
     }
 
     #[Test]
+    public function includeScriptCarriesTheCspNonceFromTheRequestAttribute(): void
+    {
+        $html = $this->renderContactRows([
+            'form_div_layout.html.twig',
+            'altcha_type_theme.html.twig',
+        ], includeScript: true, useStimulus: false, cspNonce: 'n0nce');
+
+        self::assertStringContainsString('src="/bundles/nowoaltchatype/altcha-type.js" defer nonce="n0nce"', $html);
+    }
+
+    #[Test]
+    public function includeScriptOmitsTheNonceWithoutTheRequestAttribute(): void
+    {
+        $html = $this->renderContactRows([
+            'form_div_layout.html.twig',
+            'altcha_type_theme.html.twig',
+        ], includeScript: true, useStimulus: false, cspNonce: '');
+
+        self::assertStringContainsString('src="/bundles/nowoaltchatype/altcha-type.js"', $html);
+        self::assertStringNotContainsString('nonce=', $html);
+    }
+
+    #[Test]
     public function disabledFieldRendersPlaceholderInput(): void
     {
         $html = $this->renderContactRows(['form_div_layout.html.twig', 'altcha_type_theme.html.twig'], enable: false);
@@ -95,7 +121,7 @@ final class AltchaTypeFormThemeRenderTest extends TestCase
     /**
      * @param list<string> $themes
      */
-    private function renderContactRows(array $themes, bool $includeScript = true, bool $useStimulus = false, bool $enable = true): string
+    private function renderContactRows(array $themes, bool $includeScript = true, bool $useStimulus = false, bool $enable = true, ?string $cspNonce = null): string
     {
         $bundleRoot = dirname(__DIR__, 4);
         $loader     = new FilesystemLoader([
@@ -104,7 +130,18 @@ final class AltchaTypeFormThemeRenderTest extends TestCase
         ]);
         $loader->addPath($bundleRoot . '/src/Resources/views', 'NowoAltchaTypeBundle');
 
-        $twig     = new Environment($loader);
+        $twig = new Environment($loader);
+        if ($cspNonce !== null) {
+            $request = new Request();
+            if ($cspNonce !== '') {
+                $request->attributes->set('csp_nonce', $cspNonce);
+            }
+            $requestStack = new RequestStack();
+            $requestStack->push($request);
+            $app = new AppVariable();
+            $app->setRequestStack($requestStack);
+            $twig->addGlobal('app', $app);
+        }
         $engine   = new TwigRendererEngine($themes, $twig);
         $renderer = new FormRenderer($engine);
         $twig->addRuntimeLoader(new FactoryRuntimeLoader([

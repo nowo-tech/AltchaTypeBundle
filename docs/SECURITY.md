@@ -85,6 +85,8 @@ When the host app sends a CSP:
 - `connect-src` must allow the challenge route (same origin by default) and, if the widget verifies remotely, your Sentinel host;
 - `worker-src blob:` is required by the ALTCHA widget, which solves the proof-of-work in Web Workers; Argon2id / Scrypt profiles additionally load `'self'` workers from `/bundles/nowoaltchatype/workers/`.
 
+Nonce-based policies (shared nowo-tech convention): the bundle templates render no inline `<script>`/`<style>` and no inline event handlers (enforced by `tests/Unit/Templates/InlineBlocksDeclareNonceTest.php`). The ALTCHA library injects one `<style id="altcha-css">` at load and copies the nonce from `document.currentScript.nonce`, falling back to `<meta name="csp-nonce" content="…">`. With `include_script: true` the widget's `<script>` tag carries `nonce` from the request attribute **`csp_nonce`** (set it in your CSP listener: `$request->attributes->set('csp_nonce', $nonce)`). With Stimulus / your own asset tag, put the nonce on the entry `<script>` or render the meta tag; otherwise allow that style through `style-src-elem`.
+
 ## Permissions and exposure
 
 - `/_nowo/altcha/challenge` must be `PUBLIC_ACCESS` (anonymous users solve challenges before submitting). It does not change state and sends `Cache-Control: no-store`.

@@ -11,7 +11,9 @@
 {% if form.vars.altcha_enable %}
 {% if form.vars.altcha_include_script and not form.vars.altcha_use_stimulus %}
 <link rel="stylesheet" href="{{ asset('altcha-type.css', 'nowo_altcha_type') }}" />
-<script src="{{ asset('altcha-type.js', 'nowo_altcha_type') }}" defer></script>
+{#- The nonce lets the ALTCHA library copy it (document.currentScript.nonce) onto the <style> it injects. -#}
+{% set _csp_nonce = app.request is defined and app.request ? app.request.attributes.get('csp_nonce')|default('') : '' %}
+<script src="{{ asset('altcha-type.js', 'nowo_altcha_type') }}" defer{% if _csp_nonce %} nonce="{{ _csp_nonce }}"{% endif %}></script>
 {% endif %}
 <div
     class="nowo-altcha-type"
