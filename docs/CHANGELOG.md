@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-09
+
+### Changed
+
+- Rebuilt the shipped IIFE asset (`src/Resources/public/altcha-type.js`) with Vite 8; no source change.
+
+### Dependencies
+
+- Dev toolchain: Vite 6.4.4 -> 8.3.2, TypeScript 5.9.3 -> 7.0.2 (Dependabot).
+- Dev: `phpstan/phpstan` 2.3.0 -> 2.3.1.
+- Demo `composer.lock`: refreshed path-repository reference and extension suggestions (`ext-sodium`, `ext-scrypt`).
+
 ## [1.0.0] - 2026-10-08
 
 ### Added
@@ -12,5 +24,6 @@
 - Flex recipe with a generated `ALTCHA_HMAC_SIGNATURE`.
 - ALTCHA v3 key-derivation algorithms per profile: `PBKDF2` (default), `SHA`, `ARGON2ID` (`ext-sodium`), `SCRYPT` (`ext-scrypt`), with bounded `cost` / `memory_cost` / `parallelism`; Argon2id/Scrypt widget workers published under `public/workers/`.
 
-[Unreleased]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/nowo-tech/AltchaTypeBundle/releases/tag/v1.0.0

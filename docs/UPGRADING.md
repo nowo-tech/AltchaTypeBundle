@@ -1,5 +1,13 @@
 # Upgrading
 
+## 1.0.1
+
+```bash
+composer update nowo-tech/altcha-type-bundle
+```
+
+No breaking changes. No application upgrade steps.
+
 ## 1.0.0
 
 Initial public release — no upgrade path yet.
