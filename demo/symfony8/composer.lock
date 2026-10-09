@@ -59,7 +59,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/altcha-type-bundle",
-                "reference": "0aa0a0eda72dc96d26d73bf79bf1e66c0f04a0ce"
+                "reference": "9747534564459ad00d0b4bbeec142538d6d260b6"
             },
             "require": {
                 "altcha-org/altcha": "^2.3",
