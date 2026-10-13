@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-13
+
 ### Security
 
 - **Replay check atomicity**: `AltchaVerifier` runs the replay-cache read and write under a Symfony Lock when a lock factory is available (new `replay_protection.lock_factory`, default `lock.factory`, ignored when the service does not exist). Without it the check is documented as best-effort.
@@ -51,7 +53,8 @@
 - Flex recipe with a generated `ALTCHA_HMAC_SIGNATURE`.
 - ALTCHA v3 key-derivation algorithms per profile: `PBKDF2` (default), `SHA`, `ARGON2ID` (`ext-sodium`), `SCRYPT` (`ext-scrypt`), with bounded `cost` / `memory_cost` / `parallelism`; Argon2id/Scrypt widget workers published under `public/workers/`.
 
-[Unreleased]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.1...v1.0.2
