@@ -28,7 +28,7 @@ make up
 - `make update-bundle` – Update bundle from path repo
 - `make shell` – Shell in container
 - `make test-e2e` – Playwright e2e (solves a real challenge and submits the form)
-- `make demo-screenshots` – Refresh `docs/images/demo/*.png`
+- `make demo-screenshots` – Refresh `docs/images/demo/*.webp`
 - `make cache-clear` – Clear Symfony cache (useful if you changed config/templates and didn’t restart)
 
 **Refreshing template changes:** In dev, Twig cache is disabled and OPcache revalidates on every request, so changes to `.twig` files should appear on browser refresh. If they don’t, run `make cache-clear` or `make restart`.

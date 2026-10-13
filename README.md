@@ -13,11 +13,11 @@ This bundle is **FrankenPHP worker mode friendly** (kernel reused / `FRANKENPHP_
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="docs/images/demo/overview.png" alt="Demo with navbar — ALTCHA widget unverified in a contact form" />
+      <img src="docs/images/demo/overview.webp" alt="Demo with navbar — ALTCHA widget unverified in a contact form" />
       <br /><sub>ALTCHA proof-of-work field — ready to verify</sub>
     </td>
     <td align="center" width="50%">
-      <img src="docs/images/demo/interaction.png" alt="Demo with navbar — ALTCHA widget verified" />
+      <img src="docs/images/demo/interaction.webp" alt="Demo with navbar — ALTCHA widget verified" />
       <br /><sub>ALTCHA verified — payload synced to the form</sub>
     </td>
   </tr>
@@ -178,7 +178,7 @@ Render with a child loop (REQ-TWIG-003 / REQ-TWIG-005):
 ```bash
 make up-symfony8                        # http://localhost:8055 (FrankenPHP worker mode)
 make -C demo/symfony8 test-e2e          # Playwright e2e (REQ-DEMO-013)
-make -C demo/symfony8 demo-screenshots  # refreshes docs/images/demo/*.png
+make -C demo/symfony8 demo-screenshots  # refreshes docs/images/demo/*.webp
 ```
 
 See [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md).
