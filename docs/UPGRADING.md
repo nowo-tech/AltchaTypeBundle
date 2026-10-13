@@ -1,5 +1,15 @@
 # Upgrading
 
+## 1.0.3
+
+From **1.0.2** — dependency refresh and repository maintenance.
+
+```bash
+composer update nowo-tech/altcha-type-bundle
+```
+
+- No breaking changes. No application upgrade steps.
+
 ## 1.0.2
 
 No action required. With `include_script: true` the bundle's script tag now emits `nonce` from the request attribute `csp_nonce` (see [Security — Content Security Policy](SECURITY.md#content-security-policy)). If you load `altcha-type.js` yourself (`include_script: false`) or through Stimulus, give that script the nonce or add `<meta name="csp-nonce" content="…">` so the injected widget `<style>` is allowed.

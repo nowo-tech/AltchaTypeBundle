@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-10-13
+
+### Dependencies
+
+- `vite` 8.3.2 → 8.3.4 (frontend tooling; #3).
+
 ## [1.0.2] - 2026-10-09
 
 ### Changed
@@ -30,7 +36,8 @@
 - Flex recipe with a generated `ALTCHA_HMAC_SIGNATURE`.
 - ALTCHA v3 key-derivation algorithms per profile: `PBKDF2` (default), `SHA`, `ARGON2ID` (`ext-sodium`), `SCRYPT` (`ext-scrypt`), with bounded `cost` / `memory_cost` / `parallelism`; Argon2id/Scrypt widget workers published under `public/workers/`.
 
-[Unreleased]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/nowo-tech/AltchaTypeBundle/releases/tag/v1.0.0
