@@ -791,6 +791,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     replay_protection?: bool|array{ // Single-use payloads: a solved challenge is remembered until it expires and rejected on reuse.
  *         enabled?: bool|Param, // Default: true
  *         cache_pool?: scalar|Param|null, // PSR-6 cache pool service id (shared across workers/hosts in production, e.g. Redis). // Default: "cache.app"
+ *         lock_factory?: scalar|Param|null, // Symfony Lock factory service id used to make the replay check atomic (requires symfony/lock; ignored when the service does not exist). Null: best-effort check without lock. // Default: "lock.factory"
  *     },
  *     include_script?: bool|Param, // When true, the Twig theme can emit the altcha widget script tag. // Default: true
  *     use_stimulus?: bool|Param, // When true, prefer Stimulus controller attributes instead of auto-including the script. // Default: false
