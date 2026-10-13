@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-13
+
 ### Changed
 
 - Minimum Symfony version raised from 6.0 to **6.4** (`^6.4 || ^7.0 || ^8.0`, including `symfony/clock`). The code already relied on Symfony 6.3/6.4 APIs, so installs on 6.0–6.3 could resolve but not run. CI now also tests Symfony 6.4.
@@ -40,7 +42,8 @@
 - Flex recipe with a generated `ALTCHA_HMAC_SIGNATURE`.
 - ALTCHA v3 key-derivation algorithms per profile: `PBKDF2` (default), `SHA`, `ARGON2ID` (`ext-sodium`), `SCRYPT` (`ext-scrypt`), with bounded `cost` / `memory_cost` / `parallelism`; Argon2id/Scrypt widget workers published under `public/workers/`.
 
-[Unreleased]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.0...v1.0.1

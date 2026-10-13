@@ -1,5 +1,15 @@
 # Upgrading
 
+## 1.1.0
+
+From **1.0.3** — require Symfony 6.4 as the minimum version.
+
+```bash
+composer update nowo-tech/altcha-type-bundle
+```
+
+- Symfony 6.4 is the minimum (the code already needed it).
+
 ## 1.0.3
 
 From **1.0.2** — dependency refresh and repository maintenance.
