@@ -16,6 +16,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Clock\NativeClock;
+use Symfony\Component\Lock\LockFactory;
 use Throwable;
 
 use function is_string;
@@ -27,6 +28,13 @@ use function strlen;
  * Local verification enforces, in order: payload size, expiry presence, the profile signed into the
  * challenge, the profile's v3 algorithm (PBKDF2/SHA/ARGON2ID/SCRYPT), signature + expiry + solution
  * (altcha-org), and single use (replay cache) when a pool is configured.
+ *
+ * Replay check: with a Symfony {@see LockFactory} the "already used?" read and the "mark used" write
+ * run under a lock, so two concurrent submissions of the same payload cannot both pass. Without a
+ * lock factory the check is best-effort (a narrow race between the cache read and write remains).
+ *
+ * Sentinel: the profile signed into the challenge (when the payload carries one) must match the
+ * expected profile before the payload is sent to Sentinel.
  */
 final class AltchaVerifier
 {
@@ -35,6 +43,9 @@ final class AltchaVerifier
 
     /** @var string Prefix of replay-cache keys. */
     private const REPLAY_KEY_PREFIX = 'nowo_altcha_type.used.';
+
+    /** @var float Lock TTL in seconds for the replay check (the critical section is two cache calls). */
+    private const REPLAY_LOCK_TTL = 10.0;
 
     private readonly ClockInterface $clock;
 
@@ -47,6 +58,7 @@ final class AltchaVerifier
      * @param ClockInterface|null $clock Clock for replay-cache TTLs (defaults to the native clock)
      * @param HttpClientInterface|null $sentinelHttpClient HTTP client for Sentinel (defaults to the altcha-org stream client)
      * @param AltchaTypeProfileRegistry|null $profiles Profiles (select the v3 algorithm; PBKDF2 when null)
+     * @param LockFactory|null $lockFactory Symfony Lock factory making the replay check atomic (null: best-effort)
      */
     public function __construct(
         private readonly AltchaClientFactory $clientFactory,
@@ -57,6 +69,7 @@ final class AltchaVerifier
         ?ClockInterface $clock = null,
         private readonly ?HttpClientInterface $sentinelHttpClient = null,
         private readonly ?AltchaTypeProfileRegistry $profiles = null,
+        private readonly ?LockFactory $lockFactory = null,
     ) {
         $this->clock = $clock ?? new NativeClock();
     }
@@ -80,6 +93,12 @@ final class AltchaVerifier
         }
 
         if ($this->isSentinelEnabled()) {
+            if (!$this->isSignedForProfile($payload, $expectedProfile)) {
+                $this->logger?->info('ALTCHA payload rejected: challenge issued for another profile.');
+
+                return false;
+            }
+
             $sentinelResult = $this->verifyViaSentinel($payload);
             if ($sentinelResult !== null) {
                 return $sentinelResult;
@@ -188,18 +207,53 @@ final class AltchaVerifier
             return true;
         }
 
-        $item = $this->replayCache->getItem(self::REPLAY_KEY_PREFIX . hash('sha256', $signature));
-        if ($item->isHit()) {
-            $this->logger?->info('ALTCHA payload rejected: challenge already used (replay).');
+        $key = self::REPLAY_KEY_PREFIX . hash('sha256', $signature);
 
-            return false;
+        // Serialize "read → check → write" per challenge when a lock factory is available.
+        $lock = $this->lockFactory?->createLock($key, self::REPLAY_LOCK_TTL);
+        $lock?->acquire(true);
+
+        try {
+            $item = $this->replayCache->getItem($key);
+            if ($item->isHit()) {
+                $this->logger?->info('ALTCHA payload rejected: challenge already used (replay).');
+
+                return false;
+            }
+
+            $ttl = (int) ceil($expiresAt - (float) $this->clock->now()->format('U.u'));
+            $item->set(true)->expiresAfter(max(1, $ttl));
+            $this->replayCache->save($item);
+
+            return true;
+        } finally {
+            $lock?->release();
+        }
+    }
+
+    /**
+     * Whether the payload may be used for the expected profile. When the payload is a proof-of-work
+     * payload carrying a signed profile, it must equal the expected one; payloads without a profile
+     * (e.g. challenges issued by Sentinel itself) are left to Sentinel.
+     *
+     * @param string $payload Base64 payload
+     * @param string|null $expectedProfile Expected profile name (null skips the check)
+     *
+     * @return bool False only when a signed profile is present and differs
+     */
+    private function isSignedForProfile(string $payload, ?string $expectedProfile): bool
+    {
+        if ($expectedProfile === null) {
+            return true;
         }
 
-        $ttl = (int) ceil($expiresAt - (float) $this->clock->now()->format('U.u'));
-        $item->set(true)->expiresAfter(max(1, $ttl));
-        $this->replayCache->save($item);
+        try {
+            $signedProfile = Payload::fromBase64($payload)->challenge->parameters->data[AltchaChallengeFactory::DATA_PROFILE_KEY] ?? null;
+        } catch (Throwable) {
+            return true;
+        }
 
-        return true;
+        return $signedProfile === null || $signedProfile === $expectedProfile;
     }
 
     /**

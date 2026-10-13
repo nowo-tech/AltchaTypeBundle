@@ -1,5 +1,10 @@
 # Upgrading
 
+## Unreleased
+
+- **Replay lock:** when `symfony/lock` is installed and a `lock.factory` service exists, the replay check now acquires a short per-challenge lock (blocking). On several hosts configure a shared lock store, or set `replay_protection.lock_factory: null` to keep the previous best-effort behaviour.
+- **Sentinel:** with `sentinel.enabled`, payloads whose challenge was signed for another profile than the form field's are rejected before Sentinel is called (previously only local verification checked it).
+
 ## 1.1.0
 
 From **1.0.3** — require Symfony 6.4 as the minimum version.

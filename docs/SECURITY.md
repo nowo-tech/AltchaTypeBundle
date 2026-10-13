@@ -52,14 +52,14 @@ It does **not**:
 
 ## Mitigations
 
-- **Single-use payloads** (`replay_protection`, enabled by default): after a successful verification the challenge signature hash is stored in a PSR-6 pool (`cache.app` by default) until the challenge expires; a second submission is rejected. Use a **shared** pool (Redis, database) when the app runs on several hosts.
+- **Single-use payloads** (`replay_protection`, enabled by default): after a successful verification the challenge signature hash is stored in a PSR-6 pool (`cache.app` by default) until the challenge expires; a second submission is rejected. Use a **shared** pool (Redis, database) when the app runs on several hosts. The read/write pair is atomic only when a Symfony Lock factory is available (`replay_protection.lock_factory`, default `lock.factory`); otherwise the check is best-effort under concurrent submissions.
 - **Profile binding**: the profile name is embedded in the **signed** challenge `data`. `AltchaType` binds its `AltchaValid` constraint to the field profile, so a `low` solution is rejected on a `high` field.
 - **Signature first**: `altcha-org/altcha` checks the HMAC signature (constant-time `hash_equals`) **before** any PBKDF2 work, so forged challenges cannot burn CPU on verification.
 - **Mandatory expiry**: every issued challenge carries `expiresAt`; payloads without expiry are rejected, expired ones fail. Profile `expires` must be a relative future offset of at most one day.
 - **Bounded difficulty**: profile `cost` ≤ `100000` and counters ≤ `1000000`; for ALTCHA v3 memory-hard algorithms `ARGON2ID` cost ≤ 10 and memory ≤ 64 MiB, `SCRYPT` N ≤ 65536, r ≤ 16, p ≤ 4 (configuration is rejected otherwise). Memory-hard profiles cost server memory on every challenge request — rate-limit the endpoint accordingly.
 - **Algorithm pinning**: the key-derivation algorithm comes from the (signed) profile; payloads whose challenge algorithm differs are rejected before any derivation. Unknown `?profile=` values return **HTTP 400** (no exception / 500).
 - **Payload size limit**: payloads longer than `4096` bytes are rejected before decoding.
-- **Sentinel**: a Sentinel verdict (accept or reject) is **final**. Only a transport failure (network error, 5xx, invalid body) may fall back to local verification, and only with `sentinel.fallback_local: true` (default `false`). `base_url` must be `https://`; timeouts are bounded (`timeout` ≤ 10 s, `retries` ≤ 2) per REQ-RUNTIME-001.
+- **Sentinel**: the profile signed into the challenge (when present) must match the field's profile before the payload is sent to Sentinel. A Sentinel verdict (accept or reject) is **final**. Only a transport failure (network error, 5xx, invalid body) may fall back to local verification, and only with `sentinel.fallback_local: true` (default `false`). `base_url` must be `https://`; timeouts are bounded (`timeout` ≤ 10 s, `retries` ≤ 2) per REQ-RUNTIME-001.
 - **Fail closed**: any decoding or verification error yields "invalid".
 - **Escaping**: Twig autoescape is on; the challenge URL is rendered with `|e('html_attr')`; no user input reaches the widget template.
 - **Test mode**: `enable: false` accepts every payload — the Flex recipe sets it **only** under `when@test`.

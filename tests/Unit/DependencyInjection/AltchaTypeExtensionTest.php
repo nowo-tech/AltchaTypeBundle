@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\FrameworkExtension;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Reference;
 
 use function dirname;
@@ -63,6 +64,22 @@ final class AltchaTypeExtensionTest extends TestCase
         $replayCache = $container->getDefinition(AltchaVerifier::class)->getArgument('$replayCache');
         self::assertInstanceOf(Reference::class, $replayCache);
         self::assertSame('cache.app', (string) $replayCache);
+
+        $lockFactory = $container->getDefinition(AltchaVerifier::class)->getArgument('$lockFactory');
+        self::assertInstanceOf(Reference::class, $lockFactory);
+        self::assertSame('lock.factory', (string) $lockFactory);
+        self::assertSame(ContainerInterface::NULL_ON_INVALID_REFERENCE, $lockFactory->getInvalidBehavior());
+    }
+
+    #[Test]
+    public function loadWithoutLockFactoryPassesNull(): void
+    {
+        $container = new ContainerBuilder();
+        (new AltchaTypeExtension())->load([[
+            'replay_protection' => ['lock_factory' => null],
+        ]], $container);
+
+        self::assertNull($container->getDefinition(AltchaVerifier::class)->getArgument('$lockFactory'));
     }
 
     #[Test]
@@ -74,6 +91,7 @@ final class AltchaTypeExtensionTest extends TestCase
         ]], $container);
 
         self::assertNull($container->getDefinition(AltchaVerifier::class)->getArgument('$replayCache'));
+        self::assertNull($container->getDefinition(AltchaVerifier::class)->getArgument('$lockFactory'));
     }
 
     #[Test]

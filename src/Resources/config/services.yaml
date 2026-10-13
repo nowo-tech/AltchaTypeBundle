@@ -19,13 +19,14 @@ services:
 
   Nowo\AltchaTypeBundle\Service\AltchaChallengeFactory: ~
 
-  # $replayCache is set by AltchaTypeExtension from replay_protection.cache_pool.
+  # $replayCache / $lockFactory are set by AltchaTypeExtension from replay_protection.*.
   Nowo\AltchaTypeBundle\Service\AltchaVerifier:
     arguments:
       $enable: '%nowo_altcha_type.enable%'
       $sentinel: '%nowo_altcha_type.sentinel%'
       $replayCache: null
       $sentinelHttpClient: null
+      $lockFactory: null
 
   Nowo\AltchaTypeBundle\Controller\AltchaChallengeController: ~
 

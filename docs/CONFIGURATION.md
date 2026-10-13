@@ -28,6 +28,7 @@ Root key: `nowo_altcha_type` (REQ-CFG-001). The tree is strict: unknown keys and
 | `debug` | `false` | Frontend `console.debug` logging |
 | `replay_protection.enabled` | `true` | Reject a solved payload the second time it is submitted |
 | `replay_protection.cache_pool` | `cache.app` | PSR-6 pool storing used challenges until they expire |
+| `replay_protection.lock_factory` | `lock.factory` | Symfony Lock factory making the replay check atomic; ignored when the service does not exist, `null` disables it |
 | `profiles` | built-in | Named difficulty / UX blocks ([Profiles](#profiles)) |
 | `sentinel` | disabled | Optional ALTCHA Sentinel remote verification ([Sentinel](#sentinel)) |
 
@@ -113,6 +114,8 @@ nowo_altcha_type:
 
 Disable only if another layer guarantees single use (`replay_protection: false`).
 
+**Atomicity.** The check reads the pool, then writes it. With [symfony/lock](https://symfony.com/doc/current/lock.html) installed (FrameworkBundle then registers `lock.factory`), the read and write run under a per-challenge lock, so two concurrent submissions of the same payload cannot both pass. Without a lock factory the check is **best-effort**: a narrow race between read and write remains. On several hosts use a shared lock store (e.g. `framework.lock: '%env(REDIS_DSN)%'`), because the default `flock` store only locks within one host. Point `replay_protection.lock_factory` to another service id to use a dedicated factory, or set it to `null` to disable locking.
+
 ## Sentinel
 
 ```yaml
@@ -126,7 +129,7 @@ nowo_altcha_type:
     fallback_local: false # verify locally only when Sentinel is unreachable
 ```
 
-A Sentinel verdict (accepted or rejected) is final. With `fallback_local: true`, only transport failures (network error, 5xx, invalid response) fall back to local proof-of-work verification.
+Before calling Sentinel, a payload whose challenge carries a signed profile (challenges issued by the bundle's challenge route) must match the form field's profile, as in local verification; payloads without a profile (e.g. challenges issued by Sentinel itself) are left to Sentinel. A Sentinel verdict (accepted or rejected) is final. With `fallback_local: true`, only transport failures (network error, 5xx, invalid response) fall back to local proof-of-work verification.
 
 ## Timeouts (FrankenPHP / PHP-FPM)
 

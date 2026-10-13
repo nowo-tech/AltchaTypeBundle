@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Security
+
+- **Replay check atomicity**: `AltchaVerifier` runs the replay-cache read and write under a Symfony Lock when a lock factory is available (new `replay_protection.lock_factory`, default `lock.factory`, ignored when the service does not exist). Without it the check is documented as best-effort.
+- **Sentinel profile binding**: the Sentinel verification path now enforces the profile signed into the challenge (when the payload carries one), like local verification. A payload solved for a cheaper profile is no longer forwarded to Sentinel for a field that expects another profile.
+
+### Changed
+
+- Dev: Vitest and `@vitest/coverage-v8` `^4.1.11` (was `^3.2.6`); extra controller test keeps 100% branch coverage under Vitest 4. `symfony/lock` added to `require-dev` and `suggest`.
+
 ## [1.1.0] - 2026-10-13
 
 ### Changed

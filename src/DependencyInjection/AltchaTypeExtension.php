@@ -10,10 +10,13 @@ use Nowo\AltchaTypeBundle\Service\AltchaVerifier;
 use Symfony\Component\Asset\Package;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+
+use function is_string;
 
 /**
  * Dependency injection extension for AltchaTypeBundle.
@@ -106,6 +109,9 @@ final class AltchaTypeExtension extends Extension implements PrependExtensionInt
             ->setArgument('$sentinel', $config['sentinel'])
             ->setArgument('$replayCache', $config['replay_protection']['enabled']
                 ? new Reference($config['replay_protection']['cache_pool'])
+                : null)
+            ->setArgument('$lockFactory', $config['replay_protection']['enabled'] && is_string($config['replay_protection']['lock_factory']) && $config['replay_protection']['lock_factory'] !== ''
+                ? new Reference($config['replay_protection']['lock_factory'], ContainerInterface::NULL_ON_INVALID_REFERENCE)
                 : null);
     }
 

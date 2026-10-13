@@ -50,4 +50,17 @@ describe('AltchaTypeController', () => {
     const root = document.querySelector<HTMLElement>('[data-controller="altcha-type"]')!;
     expect((root as HTMLElement & { __nowoAltchaCleanup?: () => void }).__nowoAltchaCleanup).toBeUndefined();
   });
+
+  it('ignores non-HTML elements (e.g. SVG) on connect and disconnect', async () => {
+    document.body.innerHTML = '<svg data-controller="altcha-type"></svg>';
+    await flush();
+
+    const root = document.querySelector('[data-controller="altcha-type"]')!;
+    expect(root instanceof HTMLElement).toBe(false);
+    expect((root as Element & { __nowoAltchaCleanup?: () => void }).__nowoAltchaCleanup).toBeUndefined();
+
+    root.remove();
+    await flush();
+    expect(document.querySelector('[data-controller="altcha-type"]')).toBeNull();
+  });
 });

@@ -22,6 +22,7 @@ use Psr\Log\NullLogger;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Clock\MockClock;
+use Symfony\Component\Lock\LockFactory;
 
 use function is_int;
 use function str_repeat;
@@ -316,5 +317,52 @@ final class AltchaVerifierTest extends TestCase
         unset($profiles['high']);
 
         self::assertFalse($this->v3Verifier(new AltchaTypeProfileRegistry('default', $profiles))->verify($payload));
+    }
+
+    #[Test]
+    public function replayCheckRunsUnderLockWhenLockFactoryIsAvailable(): void
+    {
+        $store    = new RecordingLockStore();
+        $verifier = new AltchaVerifier($this->clientFactory(), true, [], new ArrayAdapter(), new NullLogger(), null, null, null, new LockFactory($store));
+        $payload  = $this->solvedPayload();
+
+        self::assertTrue($verifier->verify($payload, 'default'));
+        self::assertFalse($verifier->verify($payload, 'default'), 'Replay must still be rejected under the lock.');
+
+        // Each verification acquires and releases the per-challenge lock (released also on the replay path).
+        self::assertSame(['save', 'delete', 'save', 'delete'], $store->events);
+        self::assertCount(1, array_unique($store->keys));
+        self::assertStringStartsWith('nowo_altcha_type.used.', $store->keys[0]);
+    }
+
+    #[Test]
+    public function sentinelRejectsPayloadSignedForAnotherProfile(): void
+    {
+        $sentinel = ['enabled' => true, 'base_url' => 'https://sentinel.test', 'retries' => 0];
+        $verifier = new AltchaVerifier(
+            $this->clientFactory(),
+            true,
+            $sentinel,
+            null,
+            new NullLogger(),
+            null,
+            $this->sentinelHttp(static function (): never {
+                throw new RuntimeException('Sentinel must not be called for a profile mismatch.');
+            }),
+        );
+
+        // Regression: the Sentinel path skipped the profile binding enforced locally.
+        self::assertFalse($verifier->verify($this->solvedPayload('high'), 'default'));
+    }
+
+    #[Test]
+    public function sentinelAcceptsPayloadSignedForExpectedProfileOrWithoutProfile(): void
+    {
+        $sentinel = ['enabled' => true, 'base_url' => 'https://sentinel.test', 'retries' => 0];
+        $verifier = $this->verifier($sentinel, http: $this->sentinelHttp(200, '{"verified":true}'));
+
+        self::assertTrue($verifier->verify($this->solvedPayload('default'), 'default'));
+        // Payloads that carry no signed profile (e.g. Sentinel-issued challenges) are left to Sentinel.
+        self::assertTrue($verifier->verify('opaque', 'default'));
     }
 }
