@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Minimum Symfony version raised from 6.0 to **6.4** (`^6.4 || ^7.0 || ^8.0`, including `symfony/clock`). The code already relied on Symfony 6.3/6.4 APIs, so installs on 6.0–6.3 could resolve but not run. CI now also tests Symfony 6.4.
+
 ## [1.0.3] - 2026-10-13
 
 ### Dependencies

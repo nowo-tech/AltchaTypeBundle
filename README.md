@@ -1,10 +1,10 @@
 # Altcha Type Bundle
 
-[![CI](https://github.com/nowo-tech/AltchaTypeBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/AltchaTypeBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/altcha-type-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/altcha-type-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/altcha-type-bundle.svg)](https://packagist.org/packages/nowo-tech/altcha-type-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-6.0%2B%20%7C%207.4%2B%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/altcha-type-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/AltchaTypeBundle) [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](#tests-and-coverage)
+[![CI](https://github.com/nowo-tech/AltchaTypeBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/AltchaTypeBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/altcha-type-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/altcha-type-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/altcha-type-bundle.svg)](https://packagist.org/packages/nowo-tech/altcha-type-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-6.4%2B%20%7C%207.4%2B%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/altcha-type-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/AltchaTypeBundle) [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](#tests-and-coverage)
 
 > ⭐ **Found this useful?** Give it a **star** on [GitHub](https://github.com/nowo-tech/AltchaTypeBundle) so more developers can find it.
 
-**Symfony FormType for [ALTCHA](https://altcha.org/)** — a privacy-friendly, self-hosted proof-of-work CAPTCHA alternative for forms. No cookies, no fingerprinting, GDPR-friendly. Drop-in `AltchaType` field with named difficulty profiles, Twig themes, and optional Stimulus. For **Symfony 6, 7 and 8** · PHP 8.2+.
+**Symfony FormType for [ALTCHA](https://altcha.org/)** — a privacy-friendly, self-hosted proof-of-work CAPTCHA alternative for forms. No cookies, no fingerprinting, GDPR-friendly. Drop-in `AltchaType` field with named difficulty profiles, Twig themes, and optional Stimulus. For **Symfony 6.4, 7 and 8** · PHP 8.2+.
 
 ![FrankenPHP Friendly Worker Mode](docs/images/frankenphp-friendly.png)
 
@@ -55,7 +55,7 @@ Looking for **Symfony ALTCHA**, **ALTCHA FormType**, **privacy-friendly captcha 
 - ✅ **Test mode** — `enable: false` skips verification (demo / PHPUnit)
 - ✅ **Works with or without Stimulus** — built IIFE + MutationObserver, or a Stimulus controller
 - ✅ **TypeScript + Vite + pnpm** — bundle IIFE is built with Vite; Symfony 8 demo uses **Pentatrion Vite** and **pnpm only**
-- ✅ Compatible with **Symfony 6, 7 and 8** and **FrankenPHP**
+- ✅ Compatible with **Symfony 6.4, 7 and 8** and **FrankenPHP**
 
 ## Installation
 
@@ -107,7 +107,7 @@ Full steps: [docs/INSTALLATION.md](docs/INSTALLATION.md).
 ## Requirements
 
 - PHP >= 8.2
-- **Symfony 6, 7 or 8** (`^6.0 || ^7.0 || ^8.0`), including the mandatory floor **7.4**, **8.0**, and **8.1**
+- **Symfony 6.4, 7 or 8** (`^6.4 || ^7.0 || ^8.0`; Symfony < 6.4 is not supported — `symfony/clock` needs 6.3+), including the mandatory floor **7.4**, **8.0**, and **8.1**
 - **Stimulus** optional — use the built script, or register the controller
 - **Vite** to rebuild assets (or use the pre-built files in `src/Resources/public`, which bundle the ALTCHA **v3** widget)
 - When bundling the Stimulus controller yourself: npm `altcha` **^3.2** (the v3 widget speaks the protocol of `altcha-org/altcha` 2.x)
