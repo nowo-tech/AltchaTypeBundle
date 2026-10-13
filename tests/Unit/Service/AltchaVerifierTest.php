@@ -356,6 +356,17 @@ final class AltchaVerifierTest extends TestCase
     }
 
     #[Test]
+    public function sentinelProfileMismatchIsRejectedEvenWhenSentinelWouldAccept(): void
+    {
+        // A throwing Sentinel client is a transport failure (rejected anyway without fallback_local), so
+        // also check with a Sentinel that accepts everything: only the profile binding can reject here.
+        $sentinel = ['enabled' => true, 'base_url' => 'https://sentinel.test', 'retries' => 0];
+        $verifier = $this->verifier($sentinel, http: $this->sentinelHttp(200, '{"verified":true}'));
+
+        self::assertFalse($verifier->verify($this->solvedPayload('high'), 'default'));
+    }
+
+    #[Test]
     public function sentinelAcceptsPayloadSignedForExpectedProfileOrWithoutProfile(): void
     {
         $sentinel = ['enabled' => true, 'base_url' => 'https://sentinel.test', 'retries' => 0];
