@@ -12,12 +12,12 @@
   },
   "devDependencies": {
     "typescript": "~5.7.3",
-    "vite": "^6.4.3",
+    "vite": "^6.4.4",
     "vite-plugin-symfony": "^8.2.4"
   },
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
-    "altcha": "^3.2.3"
+    "altcha": "^3.4.1"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

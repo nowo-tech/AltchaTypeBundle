@@ -11,14 +11,14 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "altcha": "^3.4.0"
+    "altcha": "^3.4.1"
   },
   "devDependencies": {
     "@hotwired/stimulus": "^3.2.2",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/coverage-v8": "^4.1.12",
     "jsdom": "^30.1.3",
     "typescript": "~7.0.2",
     "vite": "^8.3.4",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   }
 }
