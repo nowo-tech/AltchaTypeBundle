@@ -14,8 +14,8 @@ importers:
   .:
     dependencies:
       altcha:
-        specifier: ^3.2.3
-        version: 3.3.0
+        specifier: ^3.4.0
+        version: 3.4.0
     devDependencies:
       '@hotwired/stimulus':
         specifier: ^3.2.2
@@ -551,8 +551,8 @@ packages:
   '@vitest/utils@4.1.11':
     resolution: {integrity: sha512-zTCVGpyFsGWBhllOyKlTw/vnr6D9qxsfSDyfbyZmTyjHw5N/VuvzHpHoQjm2ZJzn4RJgx5w4r7V0er69CmLgPQ==}
 
-  altcha@3.3.0:
-    resolution: {integrity: sha512-olIeb1A5K2wzbFSxV3qgeknygbdJt7qmzCfAZn704PWsE9iGrfc/oTw1FfiESjsvaJf8Uk6elJX8opKq5u7dTw==}
+  altcha@3.4.0:
+    resolution: {integrity: sha512-KsKrInFLlxkM8LcVpIjtM4h/U3nHCiohFzAae0DfGDSz45eWZB9hbhNBtlRBZV/Xvw6K7195X2Hhs254QC33bA==}
 
   assertion-error@2.0.1:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
@@ -1289,7 +1289,7 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.2.0
 
-  altcha@3.3.0:
+  altcha@3.4.0:
     dependencies:
       hash-wasm: 4.12.0
 
