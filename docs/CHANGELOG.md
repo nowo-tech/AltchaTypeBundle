@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.2.2] - 2026-10-20](#122---2026-10-20)
 - [[1.2.1] - 2026-10-20](#121---2026-10-20)
 - [[1.2.0] - 2026-10-13](#120---2026-10-13)
 - [[1.1.0] - 2026-10-13](#110---2026-10-13)
@@ -12,6 +13,10 @@
 - [[1.0.0] - 2026-10-08](#100---2026-10-08)
 
 ## [Unreleased]
+
+## [1.2.2] - 2026-10-20
+
+Makefile help order, demo FrankenPHP timeout hierarchy, worktree-safe co-author check. See [UPGRADING](UPGRADING.md#to-122).
 
 ### Changed
 
@@ -83,7 +88,8 @@ Dependency refresh (bundle and demos), php-cs-fixer ParallelConfig(2). See [UPGR
 - Flex recipe with a generated `ALTCHA_HMAC_SIGNATURE`.
 - ALTCHA v3 key-derivation algorithms per profile: `PBKDF2` (default), `SHA`, `ARGON2ID` (`ext-sodium`), `SCRYPT` (`ext-scrypt`), with bounded `cost` / `memory_cost` / `parallelism`; Argon2id/Scrypt widget workers published under `public/workers/`.
 
-[Unreleased]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.2.2...HEAD
+[1.2.2]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.0.3...v1.1.0
