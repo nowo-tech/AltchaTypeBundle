@@ -23,6 +23,7 @@ This document describes how the bundle’s demo applications run under **Franken
   - [6. Build and run (production)](#6-build-and-run-production)
 - [Switching classic vs worker (`FRANKENPHP_MODE`)](#switching-classic-vs-worker-frankenphp_mode)
   - [PHP version policy (Symfony 8 demo)](#php-version-policy-symfony-8-demo)
+- [Timeout hierarchy (REQ-RUNTIME-001)](#timeout-hierarchy-req-runtime-001)
 - [Demo smoke and e2e (REQ-TEST-011 / REQ-DEMO-013)](#demo-smoke-and-e2e-req-test-011--req-demo-013)
 - [Reproducing in another bundle](#reproducing-in-another-bundle)
 - [Troubleshooting](#troubleshooting)
@@ -387,6 +388,34 @@ The demo selects the Caddyfile at container start from `FRANKENPHP_MODE` (REQ-DE
 `demo/symfony8` uses the newest PHP available in the official FrankenPHP images that also fits the demo `require.php` (`>=8.4.1,<8.6`): currently `dunglas/frankenphp:1-php8.5-alpine`. Bump the tag when FrankenPHP ships a newer PHP minor that the demo constraints allow.
 
 ---
+
+## Timeout hierarchy (REQ-RUNTIME-001)
+
+The only blocking I/O of the bundle is the optional outbound call to ALTCHA Sentinel. Its worst case per verification is `(retries + 1) × timeout` plus a short exponential back-off (≤ ~31 s with the maximum values `timeout: 10.0`, `retries: 2`; ~10.3 s with the defaults). Both demo Caddyfiles (`docker/frankenphp/Caddyfile` for worker mode, `Caddyfile.dev` for classic mode) configure the outer layers so the innermost deadline always fires first:
+
+| Layer | Demo value | Rule |
+|-------|------------|------|
+| Sentinel HTTP (`nowo_altcha_type.profiles.<name>.sentinel.timeout` × attempts) | ≤ ~31 s | Fires first; transport failure → rejection or `fallback_local` |
+| PHP `max_execution_time` / `max_input_time` (`frankenphp { php_ini … }`) | 45 s | Strictly greater than the Sentinel worst case |
+| Caddy `servers { timeouts { write } }` | 60 s | Strictly greater than PHP |
+| FrankenPHP `max_wait_time` | 30 s | Caps how long a request waits for a free PHP thread (then 504) |
+
+```caddyfile
+{
+	servers {
+		timeouts {
+			write 60s
+		}
+	}
+	frankenphp {
+		php_ini max_execution_time 45
+		php_ini max_input_time 45
+		max_wait_time 30s
+	}
+}
+```
+
+When you raise the Sentinel `timeout` or `retries`, raise `max_execution_time` and the Caddy `write` timeout in the same change. See [CONFIGURATION.md](CONFIGURATION.md#timeouts-frankenphp--php-fpm).
 
 ## Demo smoke and e2e (REQ-TEST-011 / REQ-DEMO-013)
 

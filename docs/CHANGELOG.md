@@ -13,6 +13,15 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Makefile `help` lists the targets in the canonical block order (Container → Dependencies → Assets → Tests → Quality → Release → Cleanup → Composer → Demos) (REQ-MAKE-001).
+- Demo FrankenPHP Caddyfiles (worker and classic) set the timeout hierarchy: PHP `max_execution_time` 45 s < Caddy write timeout 60 s, `max_wait_time` 30 s; documented in `docs/DEMO-FRANKENPHP.md` (REQ-RUNTIME-001).
+
+### Fixed
+
+- `.scripts/check-no-cursor-coauthor.sh` also runs inside git worktrees (`.git` file instead of directory).
+
 ## [1.2.1] - 2026-10-20
 
 Dependency refresh (bundle and demos), php-cs-fixer ParallelConfig(2). See [UPGRADING](UPGRADING.md#to-121).

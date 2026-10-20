@@ -137,6 +137,8 @@ Sentinel is the only outbound I/O (REQ-RUNTIME-001). Worst case per verification
 
 `sentinel` worst case < PHP `max_execution_time` < reverse-proxy / Caddy `servers.timeouts.write` (and FrankenPHP `max_wait_time` when workers are saturated).
 
+The demo applies this stack (PHP 45 s < Caddy write 60 s, `max_wait_time` 30 s); see [DEMO-FRANKENPHP.md](DEMO-FRANKENPHP.md#timeout-hierarchy-req-runtime-001).
+
 Local verification and challenge creation are CPU-bound and bounded by the profile limits above.
 
 ## Form theme (Symfony layouts)
