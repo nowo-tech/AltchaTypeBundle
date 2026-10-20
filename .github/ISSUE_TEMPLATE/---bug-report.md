@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 <!--
-- Please do not report an issue for a version of `AltchaTypeBundle` that is no longer supported. Currently supported versions are listed here: https://github.com/nowo-tech/AltchaTypeBundle#version-information
+- Please do not report an issue for a version of `altcha-type-bundle` that is no longer supported. Currently supported versions are listed here: https://github.com/nowo-tech/AltchaTypeBundle#version-information
 - Please fill in this template according to your issue.
 - Please keep the table shown below at the top of your issue.
 - You can retrieve `altcha-type-bundle` version by running `composer info | grep "altcha-type-bundle"`.
@@ -19,7 +19,7 @@ assignees: ''
 
 | Q                           | A
 | ----------------------------| -----------------------
-| `AltchaTypeBundle` version    | x.y.z
+| `AltchaTypeBundle` version        | x.y.z
 | PHP version                 | x.y.z
 | Database                    | MySQL / PostgreSQL / SQLite / Other
 
