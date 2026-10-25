@@ -14,6 +14,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **Assets:** reproducible bundle build. `__ALTCHA_TYPE_BUILD_TIME__` now holds a build id (a hash of the TypeScript/CSS sources and `pnpm-lock.yaml`) instead of the build time, so rebuilding unchanged sources (`make assets`, `make release-check`) no longer rewrites the committed JS (the `boot` debug log carries the id).
+
 ## [1.2.2] - 2026-10-20
 
 Makefile help order, demo FrankenPHP timeout hierarchy, worktree-safe co-author check. See [UPGRADING](UPGRADING.md#to-122).
