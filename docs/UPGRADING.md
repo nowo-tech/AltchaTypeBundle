@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.2.3](#to-123)
 - [To 1.2.2](#to-122)
 - [To 1.2.1](#to-121)
 - [1.2.0](#120)
@@ -13,6 +14,14 @@
 - [1.0.0](#100)
 
 ## Unreleased
+
+## To 1.2.3
+
+From **1.2.2**:
+
+```bash
+composer update nowo-tech/altcha-type-bundle
+```
 
 ## To 1.2.2
 
