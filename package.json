@@ -11,7 +11,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "altcha": "^3.4.1"
+    "altcha": "^3.5.0"
   },
   "devDependencies": {
     "@hotwired/stimulus": "^3.2.2",
