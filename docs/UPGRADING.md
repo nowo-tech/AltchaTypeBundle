@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.2.4](#to-124)
 - [To 1.2.3](#to-123)
 - [To 1.2.2](#to-122)
 - [To 1.2.1](#to-121)
@@ -14,6 +15,14 @@
 - [1.0.0](#100)
 
 ## Unreleased
+
+## To 1.2.4
+
+From **1.2.3**:
+
+```bash
+composer update nowo-tech/altcha-type-bundle
+```
 
 From **1.2.3**: no action if `config/routes/nowo_altcha_type.yaml` (Flex recipe) imports `@NowoAltchaTypeBundle/Controller/` with `type: attribute`. If the challenge endpoint worked on Symfony >= 7.3 without that import (only through `controllers: { resource: routing.controllers }`), add the import now: the bundle route is opt-in and no longer registered by `routing.controllers`.
 
