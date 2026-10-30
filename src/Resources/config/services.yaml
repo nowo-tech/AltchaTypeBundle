@@ -28,7 +28,12 @@ services:
       $sentinelHttpClient: null
       $lockFactory: null
 
-  Nowo\AltchaTypeBundle\Controller\AltchaChallengeController: ~
+  # REQ-SF-004 rule 7: not autoconfigured. On Symfony >= 7.3 autoconfiguration tags a #[Route] class
+  # `routing.controller`, and the host's `controllers: { resource: routing.controllers }` would then expose the
+  # challenge endpoint without the host importing the bundle routes (opt-in only). Tagged explicitly instead.
+  Nowo\AltchaTypeBundle\Controller\AltchaChallengeController:
+    autoconfigure: false
+    tags: [controller.service_arguments]
 
   Nowo\AltchaTypeBundle\Form\Type\AltchaType:
     arguments:

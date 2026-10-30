@@ -15,6 +15,10 @@
 
 ## [Unreleased]
 
+### Security
+
+- **Challenge endpoint registered without being imported (REQ-SF-004 rule 7):** `AltchaChallengeController` was autoconfigured (and carried `#[AsController]`), so on Symfony >= 7.3 its `#[Route]` tagged it `routing.controller` and a host's default `controllers: { resource: routing.controllers }` exposed the unauthenticated `GET /_nowo/altcha/challenge` even when the host never imported the bundle controllers. The service is no longer autoconfigured (explicit `controller.service_arguments` tag, no `#[AsController]`): the route exists only where the host imports `@NowoAltchaTypeBundle/Controller/` (`type: attribute`, as the Flex recipe does). Regression test with a kernel whose routing is only `routing.controllers`.
+
 ## [1.2.3] - 2026-10-25
 
 Reproducible JS bundle: the build stamp is a hash of the sources instead of the build time. See [UPGRADING](UPGRADING.md#to-123).
