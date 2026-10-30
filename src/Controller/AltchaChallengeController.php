@@ -9,7 +9,6 @@ use Nowo\AltchaTypeBundle\Service\AltchaChallengeFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -17,8 +16,10 @@ use Symfony\Component\Routing\Attribute\Route;
  *
  * The path must be publicly reachable (PUBLIC_ACCESS) even when the rest of the
  * application requires authentication. Rate-limit it in the host app (see docs/SECURITY.md).
+ *
+ * The service is not autoconfigured (REQ-SF-004 rule 7): the route exists only where the host imports the
+ * bundle controllers, never through the host's `routing.controllers` resource.
  */
-#[AsController]
 final class AltchaChallengeController
 {
     /** @var string Route name used by AltchaType to build the widget challenge URL. */
