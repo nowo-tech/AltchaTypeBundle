@@ -90,7 +90,10 @@
             "php-http/discovery": true,
             "phpstan/extension-installer": true
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "8.2.0"
+        }
     },
     "scripts": {
         "cs-check": "php-cs-fixer fix --dry-run --diff",
