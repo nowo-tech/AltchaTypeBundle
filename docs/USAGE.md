@@ -7,6 +7,7 @@
 - [Assets](#assets)
 - [Stimulus (optional)](#stimulus-optional)
 - [Validation outside forms](#validation-outside-forms)
+- [Using it from a DDD / hexagonal application](#using-it-from-a-ddd--hexagonal-application)
 - [Challenge route security](#challenge-route-security)
 - [Translations](#translations)
 
@@ -82,6 +83,66 @@ public ?string $altcha = null;
 ```
 
 Or call `Nowo\AltchaTypeBundle\Service\AltchaVerifier::verify($payload, 'contact')` directly.
+
+## Using it from a DDD / hexagonal application
+
+AltchaTypeBundle is a **presentation-layer** bot check: a form field, a validation constraint and a challenge
+endpoint, backed by a stateless verifier (PSR-6 replay cache, optional Symfony Lock and Sentinel). It has no
+entities, no events and no Doctrine dependency, so both host kinds use the same configuration.
+
+**Standard Symfony project (default).** Add `AltchaType` to the form (unmapped by default) or put
+`#[AltchaValid(profile: '...')]` on the form model; nothing else to wire.
+
+**DDD / hexagonal project (opt-in).** Keep the check at the HTTP edge:
+
+- Use `AltchaType` in the Symfony form, or `#[AltchaValid(profile: '...')]` on the **request DTO** your controller
+  validates. Do not put the constraint on domain objects or on the command you pass to the application layer: the bot
+  check is an HTTP concern.
+- For JSON APIs, verify in the controller (or an input adapter) with
+  `Nowo\AltchaTypeBundle\Service\AltchaVerifier::verify($payload, 'contact')`, then dispatch the command.
+- Verify **once**. `verify()` consumes the challenge (replay protection), so a second check of the same payload
+  returns `false`. Do not combine the constraint and a manual `verify()` call on the same payload.
+- The bundle has no IDs to map and dispatches no events; nothing crosses into your domain.
+
+If your application layer must express "this request was proved human", type-hint your own port and implement it in
+Infrastructure with the verifier. This is also how to replace or decorate the check (tests, a different provider):
+alias your port to another implementation.
+
+```php
+// Application
+interface HumanCheck
+{
+    public function passed(string $proof, string $context): bool;
+}
+
+// Infrastructure
+use Nowo\AltchaTypeBundle\Service\AltchaVerifier;
+
+final readonly class AltchaHumanCheck implements HumanCheck
+{
+    public function __construct(private AltchaVerifier $verifier) {}
+
+    public function passed(string $proof, string $context): bool
+    {
+        return $this->verifier->verify($proof, $context); // context = profile name
+    }
+}
+```
+
+```yaml
+# config/services.yaml
+App\Application\HumanCheck: '@App\Infrastructure\Altcha\AltchaHumanCheck'
+```
+
+What stays standard-only: the form type, the Twig widget and the challenge route are Symfony presentation pieces;
+use them from controllers and templates, never from the domain.
+
+### Known limitations
+
+- `AltchaVerifier` and `AltchaChallengeFactory` are final classes without interfaces: wrap them in your own port
+  (above) instead of decorating the bundle service.
+- `verify()` returns a boolean only; the rejection reason is logged, not returned.
+- `AltchaChallengeFactory::create()` returns the `altcha-org/altcha` `Challenge` object (adapter-side type).
 
 ## Challenge route security
 
