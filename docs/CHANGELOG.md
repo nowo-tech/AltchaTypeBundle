@@ -16,6 +16,10 @@
 
 ## [Unreleased]
 
+### Documentation
+
+- USAGE: new section "Using it from a DDD / hexagonal application" (standard vs DDD path, verify once at the edge, own port wrapping the verifier, known limitations).
+
 ## [1.2.4] - 2026-10-30
 
 Security: bundle routes are opt-in again; controllers are no longer autoconfigured, so a host's routing.controllers import does not expose them (REQ-SF-004 rule 7). See [UPGRADING](UPGRADING.md#to-124).
