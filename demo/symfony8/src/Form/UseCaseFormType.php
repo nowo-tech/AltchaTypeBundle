@@ -57,27 +57,27 @@ final class UseCaseFormType extends AbstractType
     private function buildWithProfile(FormBuilderInterface $builder, string $profile): void
     {
         $this->addText($builder, 'name', [
-            'label'    => 'demo.fields.name',
-            'required' => true,
+            'label'       => 'demo.fields.name',
+            'required'    => true,
             'placeholder' => false,
-            'help'     => false,
+            'help'        => false,
         ]);
         $this->addEmail($builder, 'email', [
-            'label'    => 'demo.fields.email',
-            'required' => true,
+            'label'       => 'demo.fields.email',
+            'required'    => true,
             'placeholder' => false,
-            'help'     => false,
+            'help'        => false,
         ]);
         $this->addTextarea($builder, 'message', [
-            'label'    => 'demo.fields.message',
-            'required' => true,
+            'label'       => 'demo.fields.message',
+            'required'    => true,
             'placeholder' => false,
-            'help'     => false,
+            'help'        => false,
         ]);
         $this->addAltcha($builder, 'security', [
-            'profile' => $profile,
-            'label'   => false,
-            'help'    => false,
+            'profile'     => $profile,
+            'label'       => false,
+            'help'        => false,
             'placeholder' => false,
         ]);
         $this->addSubmit($builder, 'demo.fields.submit');
@@ -89,10 +89,10 @@ final class UseCaseFormType extends AbstractType
     private function buildNewsletter(FormBuilderInterface $builder): void
     {
         $this->addEmail($builder, 'email', [
-            'label'    => 'demo.fields.email',
-            'required' => true,
+            'label'       => 'demo.fields.email',
+            'required'    => true,
             'placeholder' => false,
-            'help'     => false,
+            'help'        => false,
         ]);
         $this->addAltcha($builder, 'security', [
             'profile'     => 'low',
