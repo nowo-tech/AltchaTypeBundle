@@ -35,7 +35,7 @@ test.describe('AltchaType demo', () => {
     await host.locator('altcha-widget label').first().click();
     await expect(host.locator('[data-altcha-type-target="input"]')).not.toHaveValue('', { timeout: 30000 });
     await page.getByRole('button', { name: 'Send' }).click();
-    await expect(page.locator('.alert-success')).toBeVisible();
+    await expect(page.locator('.nowo-ui-flash--success')).toBeVisible();
   });
 
   test('submitting without solving shows the validation error', async ({ page }) => {
@@ -47,7 +47,7 @@ test.describe('AltchaType demo', () => {
       form.noValidate = true;
       form.submit();
     });
-    await expect(page.locator('.alert-success')).toHaveCount(0);
+    await expect(page.locator('.nowo-ui-flash--success')).toHaveCount(0);
     await expect(page.locator('.invalid-feedback, .form-error-message').first()).toBeVisible();
   });
 
@@ -61,6 +61,6 @@ test.describe('AltchaType demo', () => {
     await host.locator('altcha-widget label').first().click();
     await expect(host.locator('[data-altcha-type-target="input"]')).not.toHaveValue('', { timeout: 60000 });
     await page.getByRole('button', { name: 'Send' }).click();
-    await expect(page.locator('.alert-success')).toBeVisible();
+    await expect(page.locator('.nowo-ui-flash--success')).toBeVisible();
   });
 });

@@ -7,6 +7,8 @@
     "prefer-stable": true,
     "require": {
         "nowo-tech/altcha-type-bundle": "@dev",
+        "nowo-tech/form-kit-bundle": "^2.22",
+        "nowo-tech/ui-kit-bundle": "^2.49",
         "pentatrion/vite-bundle": "^8.2",
         "php": ">=8.4.1,<8.6",
         "symfony/asset": "^8.1",
@@ -18,6 +20,7 @@
         "symfony/http-kernel": "^8.1",
         "symfony/runtime": "^8.1",
         "symfony/stimulus-bundle": "^3.0",
+        "symfony/translation": "^8.1",
         "symfony/twig-bundle": "^8.1",
         "symfony/validator": "^8.1",
         "symfony/yaml": "^8.1",

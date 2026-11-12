@@ -4,17 +4,23 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use Nowo\AltchaTypeBundle\Form\Type\AltchaType;
+use Nowo\FormKitBundle\Attribute\FormKitConfig;
+use Nowo\FormKitBundle\Form\FormOptionsTrait;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * REQ-DEMO-015: a FormKit form (profile `demo`); the bundle's AltchaType is added through FormKit's addAltcha().
+ *
+ * @extends AbstractType<mixed>
+ */
+#[FormKitConfig('demo')]
 final class UseCaseFormType extends AbstractType
 {
+    use FormOptionsTrait;
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $case = $options['use_case'];
@@ -50,25 +56,31 @@ final class UseCaseFormType extends AbstractType
      */
     private function buildWithProfile(FormBuilderInterface $builder, string $profile): void
     {
-        $builder
-            ->add('name', TextType::class, [
-                'label'    => 'demo.fields.name',
-                'required' => true,
-            ])
-            ->add('email', EmailType::class, [
-                'label'    => 'demo.fields.email',
-                'required' => true,
-            ])
-            ->add('message', TextareaType::class, [
-                'label'    => 'demo.fields.message',
-                'required' => true,
-            ])
-            ->add('security', AltchaType::class, [
-                'profile' => $profile,
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'demo.fields.submit',
-            ]);
+        $this->addText($builder, 'name', [
+            'label'       => 'demo.fields.name',
+            'required'    => true,
+            'placeholder' => false,
+            'help'        => false,
+        ]);
+        $this->addEmail($builder, 'email', [
+            'label'       => 'demo.fields.email',
+            'required'    => true,
+            'placeholder' => false,
+            'help'        => false,
+        ]);
+        $this->addTextarea($builder, 'message', [
+            'label'       => 'demo.fields.message',
+            'required'    => true,
+            'placeholder' => false,
+            'help'        => false,
+        ]);
+        $this->addAltcha($builder, 'security', [
+            'profile'     => $profile,
+            'label'       => false,
+            'help'        => false,
+            'placeholder' => false,
+        ]);
+        $this->addSubmit($builder, 'demo.fields.submit');
     }
 
     /**
@@ -76,19 +88,32 @@ final class UseCaseFormType extends AbstractType
      */
     private function buildNewsletter(FormBuilderInterface $builder): void
     {
-        $builder
-            ->add('email', EmailType::class, [
-                'label'    => 'demo.fields.email',
-                'required' => true,
-            ])
-            ->add('security', AltchaType::class, [
-                'profile'     => 'low',
-                'floating'    => true,
-                'hide_logo'   => true,
-                'hide_footer' => true,
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'demo.fields.subscribe',
-            ]);
+        $this->addEmail($builder, 'email', [
+            'label'       => 'demo.fields.email',
+            'required'    => true,
+            'placeholder' => false,
+            'help'        => false,
+        ]);
+        $this->addAltcha($builder, 'security', [
+            'profile'     => 'low',
+            'floating'    => true,
+            'hide_logo'   => true,
+            'hide_footer' => true,
+            'label'       => false,
+            'help'        => false,
+            'placeholder' => false,
+        ]);
+        $this->addSubmit($builder, 'demo.fields.subscribe');
+    }
+
+    /**
+     * @param FormBuilderInterface<mixed> $builder
+     */
+    private function addSubmit(FormBuilderInterface $builder, string $label): void
+    {
+        $this->addWithDefaults($builder, 'submit', SubmitType::class, [
+            'label' => $label,
+            'attr'  => ['class' => 'nowo-ui-btn nowo-ui-btn--primary'],
+        ]);
     }
 }
