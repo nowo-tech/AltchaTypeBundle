@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use Nowo\AltchaTypeBundle\NowoAltchaTypeBundle;
+use Nowo\FormKitBundle\NowoFormKitBundle;
 use Nowo\HotReloadBundle\NowoHotReloadBundle;
 use Nowo\TwigInspectorBundle\NowoTwigInspectorBundle;
+use Nowo\UiKitBundle\NowoUiKitBundle;
 use Pentatrion\ViteBundle\PentatrionViteBundle;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -23,5 +25,7 @@ return [
     NowoAltchaTypeBundle::class    => ['all' => true],
     NowoHotReloadBundle::class     => ['dev' => true, 'test' => true],
     NowoTwigInspectorBundle::class => ['dev' => true, 'test' => true],
+    NowoFormKitBundle::class       => ['all' => true],
+    NowoUiKitBundle::class         => ['all' => true],
     TwigExtraBundle::class         => ['all' => true],
 ];
