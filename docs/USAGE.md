@@ -82,7 +82,7 @@ use Nowo\AltchaTypeBundle\Validator\Constraints\AltchaValid;
 public ?string $altcha = null;
 ```
 
-Or call `Nowo\AltchaTypeBundle\Service\AltchaVerifier::verify($payload, 'contact')` directly.
+Or call `Nowo\AltchaTypeBundle\Service\AltchaVerifierInterface::verify($payload, 'contact')` directly.
 
 ## Using it from a DDD / hexagonal application
 
@@ -99,7 +99,7 @@ entities, no events and no Doctrine dependency, so both host kinds use the same 
   validates. Do not put the constraint on domain objects or on the command you pass to the application layer: the bot
   check is an HTTP concern.
 - For JSON APIs, verify in the controller (or an input adapter) with
-  `Nowo\AltchaTypeBundle\Service\AltchaVerifier::verify($payload, 'contact')`, then dispatch the command.
+  `Nowo\AltchaTypeBundle\Service\AltchaVerifierInterface::verify($payload, 'contact')`, then dispatch the command.
 - Verify **once**. `verify()` consumes the challenge (replay protection), so a second check of the same payload
   returns `false`. Do not combine the constraint and a manual `verify()` call on the same payload.
 - The bundle has no IDs to map and dispatches no events; nothing crosses into your domain.
@@ -116,11 +116,11 @@ interface HumanCheck
 }
 
 // Infrastructure
-use Nowo\AltchaTypeBundle\Service\AltchaVerifier;
+use Nowo\AltchaTypeBundle\Service\AltchaVerifierInterface;
 
 final readonly class AltchaHumanCheck implements HumanCheck
 {
-    public function __construct(private AltchaVerifier $verifier) {}
+    public function __construct(private AltchaVerifierInterface $verifier) {}
 
     public function passed(string $proof, string $context): bool
     {
@@ -134,6 +134,18 @@ final readonly class AltchaHumanCheck implements HumanCheck
 App\Application\HumanCheck: '@App\Infrastructure\Altcha\AltchaHumanCheck'
 ```
 
+**Interfaces (REQ-ARCH-001 rule 1).** The two services a host may call or replace have a port:
+`Service\AltchaVerifierInterface` (`verify()`) and `Service\AltchaChallengeFactoryInterface` (only
+`createArray()`, which returns the JSON-ready array and carries no vendor type; the shipped class also keeps `create()`
+returning the vendor `Challenge`, outside the port). The bundle's validator and
+challenge controller depend on the interfaces, and both are aliased to the shipped classes (`AltchaVerifier`,
+`AltchaChallengeFactory`, still valid service ids). To plug your own implementation, override the alias:
+
+```yaml
+# config/services.yaml
+Nowo\AltchaTypeBundle\Service\AltchaVerifierInterface: '@App\Infrastructure\Altcha\MyVerifier'
+```
+
 What stays standard-only: the form type, the Twig widget and the challenge route are Symfony presentation pieces;
 use them from controllers and templates, never from the domain.
 
@@ -142,7 +154,7 @@ use them from controllers and templates, never from the domain.
 - `AltchaVerifier` and `AltchaChallengeFactory` are final classes without interfaces: wrap them in your own port
   (above) instead of decorating the bundle service.
 - `verify()` returns a boolean only; the rejection reason is logged, not returned.
-- `AltchaChallengeFactory::create()` returns the `altcha-org/altcha` `Challenge` object (adapter-side type).
+- `AltchaChallengeFactory::create()` returns the `altcha-org/altcha` `Challenge` object (adapter-side type); it is not part of `AltchaChallengeFactoryInterface`, which exposes `createArray()` only.
 
 ## Challenge route security
 
