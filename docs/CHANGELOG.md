@@ -18,7 +18,7 @@
 
 ### Added
 
-- **Interfaces (REQ-ARCH-001 rule 1):** `Service\AltchaVerifierInterface` and `Service\AltchaChallengeFactoryInterface` (with a vendor-type-free `createArray()`). `AltchaVerifier` and `AltchaChallengeFactory` implement them, both interfaces are aliased in the container, and the validator and challenge controller type-hint the interfaces. A host can override the alias. Strictly additive; the class service ids and defaults are unchanged.
+- **Interfaces (REQ-ARCH-001 rule 1):** `Service\AltchaVerifierInterface` and `Service\AltchaChallengeFactoryInterface` (the factory port is `createArray()` only: no vendor type; `create()` stays on the class). `AltchaVerifier` and `AltchaChallengeFactory` implement them, both interfaces are aliased in the container, and the validator and challenge controller type-hint the interfaces. A host can override the alias. Strictly additive; the class service ids and defaults are unchanged.
 
 ### Changed
 

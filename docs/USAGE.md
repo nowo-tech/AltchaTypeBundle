@@ -135,8 +135,9 @@ App\Application\HumanCheck: '@App\Infrastructure\Altcha\AltchaHumanCheck'
 ```
 
 **Interfaces (REQ-ARCH-001 rule 1).** The two services a host may call or replace have a port:
-`Service\AltchaVerifierInterface` (`verify()`) and `Service\AltchaChallengeFactoryInterface` (`create()` returns the
-vendor `Challenge`; `createArray()` returns the JSON-ready array and carries no vendor type). The bundle's validator and
+`Service\AltchaVerifierInterface` (`verify()`) and `Service\AltchaChallengeFactoryInterface` (only
+`createArray()`, which returns the JSON-ready array and carries no vendor type; the shipped class also keeps `create()`
+returning the vendor `Challenge`, outside the port). The bundle's validator and
 challenge controller depend on the interfaces, and both are aliased to the shipped classes (`AltchaVerifier`,
 `AltchaChallengeFactory`, still valid service ids). To plug your own implementation, override the alias:
 
@@ -153,7 +154,7 @@ use them from controllers and templates, never from the domain.
 - `AltchaVerifier` and `AltchaChallengeFactory` are final classes without interfaces: wrap them in your own port
   (above) instead of decorating the bundle service.
 - `verify()` returns a boolean only; the rejection reason is logged, not returned.
-- `AltchaChallengeFactory::create()` returns the `altcha-org/altcha` `Challenge` object (adapter-side type).
+- `AltchaChallengeFactory::create()` returns the `altcha-org/altcha` `Challenge` object (adapter-side type); it is not part of `AltchaChallengeFactoryInterface`, which exposes `createArray()` only.
 
 ## Challenge route security
 
