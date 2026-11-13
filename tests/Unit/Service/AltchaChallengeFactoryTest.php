@@ -51,4 +51,18 @@ final class AltchaChallengeFactoryTest extends TestCase
             $factory->create()->parameters->expiresAt,
         );
     }
+
+    #[Test]
+    public function createArrayEqualsTheChallengeArrayShape(): void
+    {
+        $factory = new AltchaChallengeFactory(
+            new AltchaClientFactory('test-secret', null, 'SHA-256'),
+            new AltchaTypeProfileRegistry('default', Configuration::builtinProfiles()),
+        );
+
+        $array = $factory->createArray('low');
+
+        self::assertSame(['profile' => 'low'], $array['parameters']['data']);
+        self::assertNotSame('', $array['signature']);
+    }
 }

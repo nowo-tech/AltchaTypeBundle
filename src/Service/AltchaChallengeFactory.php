@@ -19,7 +19,7 @@ use Symfony\Component\Clock\NativeClock;
  * reject solutions issued for a different (e.g. cheaper) profile. The key-derivation algorithm
  * (ALTCHA v3: PBKDF2, SHA, ARGON2ID, SCRYPT) and its memory/parallelism come from the profile.
  */
-final class AltchaChallengeFactory
+final class AltchaChallengeFactory implements AltchaChallengeFactoryInterface
 {
     /** @var string Key of the profile name inside the signed challenge `data`. */
     public const DATA_PROFILE_KEY = 'profile';
@@ -71,5 +71,13 @@ final class AltchaChallengeFactory
             expiresAt: $this->clock->now()->modify($profile['expires']),
             data: [self::DATA_PROFILE_KEY => $name],
         ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function createArray(?string $profileName = null): array
+    {
+        return $this->create($profileName)->toArray();
     }
 }

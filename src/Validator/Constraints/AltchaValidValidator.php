@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Nowo\AltchaTypeBundle\Validator\Constraints;
 
-use Nowo\AltchaTypeBundle\Service\AltchaVerifier;
+use Nowo\AltchaTypeBundle\Service\AltchaVerifierInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
- * Constraint validator that delegates to {@see AltchaVerifier}.
+ * Constraint validator that delegates to {@see AltchaVerifierInterface}.
  */
 final class AltchaValidValidator extends ConstraintValidator
 {
     /**
-     * @param AltchaVerifier $verifier Payload verifier
+     * @param AltchaVerifierInterface $verifier Payload verifier
      */
     public function __construct(
-        private readonly AltchaVerifier $verifier,
+        private readonly AltchaVerifierInterface $verifier,
     ) {
     }
 

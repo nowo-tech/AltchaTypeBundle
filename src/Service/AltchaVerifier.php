@@ -36,7 +36,7 @@ use function strlen;
  * Sentinel: the profile signed into the challenge (when the payload carries one) must match the
  * expected profile before the payload is sent to Sentinel.
  */
-final class AltchaVerifier
+final class AltchaVerifier implements AltchaVerifierInterface
 {
     /** @var int Maximum accepted payload length in bytes (a genuine payload is well under 1 KiB). */
     public const MAX_PAYLOAD_LENGTH = 4096;

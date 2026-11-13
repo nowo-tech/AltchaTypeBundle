@@ -16,6 +16,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Interfaces (REQ-ARCH-001 rule 1):** `Service\AltchaVerifierInterface` and `Service\AltchaChallengeFactoryInterface` (with a vendor-type-free `createArray()`). `AltchaVerifier` and `AltchaChallengeFactory` implement them, both interfaces are aliased in the container, and the validator and challenge controller type-hint the interfaces. A host can override the alias. Strictly additive; the class service ids and defaults are unchanged.
+
 ### Changed
 
 - Demo uses the UiKit base style and FormKit forms (REQ-DEMO-014/015)

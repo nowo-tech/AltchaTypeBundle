@@ -28,6 +28,11 @@ services:
       $sentinelHttpClient: null
       $lockFactory: null
 
+  # REQ-ARCH-001 rule 1: hosts and the bundle's own validator / controller depend on the interfaces; a host replaces
+  # an alias to plug its own implementation. The class ids stay valid.
+  Nowo\AltchaTypeBundle\Service\AltchaVerifierInterface: '@Nowo\AltchaTypeBundle\Service\AltchaVerifier'
+  Nowo\AltchaTypeBundle\Service\AltchaChallengeFactoryInterface: '@Nowo\AltchaTypeBundle\Service\AltchaChallengeFactory'
+
   # REQ-SF-004 rule 7: not autoconfigured. On Symfony >= 7.3 autoconfiguration tags a #[Route] class
   # `routing.controller`, and the host's `controllers: { resource: routing.controllers }` would then expose the
   # challenge endpoint without the host importing the bundle routes (opt-in only). Tagged explicitly instead.

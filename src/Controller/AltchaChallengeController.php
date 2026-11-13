@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Nowo\AltchaTypeBundle\Controller;
 
 use Nowo\AltchaTypeBundle\Profile\AltchaTypeProfileRegistry;
-use Nowo\AltchaTypeBundle\Service\AltchaChallengeFactory;
+use Nowo\AltchaTypeBundle\Service\AltchaChallengeFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,11 +26,11 @@ final class AltchaChallengeController
     public const ROUTE_NAME = 'nowo_altcha_type_challenge';
 
     /**
-     * @param AltchaChallengeFactory $challengeFactory Creates signed challenges
+     * @param AltchaChallengeFactoryInterface $challengeFactory Creates signed challenges
      * @param AltchaTypeProfileRegistry $profiles Validates the requested profile name
      */
     public function __construct(
-        private readonly AltchaChallengeFactory $challengeFactory,
+        private readonly AltchaChallengeFactoryInterface $challengeFactory,
         private readonly AltchaTypeProfileRegistry $profiles,
     ) {
     }
@@ -52,7 +52,7 @@ final class AltchaChallengeController
             return new JsonResponse(['error' => 'unknown_profile'], Response::HTTP_BAD_REQUEST);
         }
 
-        $response = new JsonResponse($this->challengeFactory->create($profile)->toArray());
+        $response = new JsonResponse($this->challengeFactory->createArray($profile));
         $response->headers->set('Cache-Control', 'no-store, private');
 
         return $response;

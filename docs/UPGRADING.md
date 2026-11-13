@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.3.0](#to-130)
 - [To 1.2.4](#to-124)
 - [To 1.2.3](#to-123)
 - [To 1.2.2](#to-122)
@@ -15,6 +16,10 @@
 - [1.0.0](#100)
 
 ## Unreleased
+
+## To 1.3.0
+
+From **1.2.4**: no action. `AltchaVerifierInterface` and `AltchaChallengeFactoryInterface` are new and additive; the class service ids still work. To replace the verifier or the challenge factory, alias the interface to your service (see [USAGE](USAGE.md#using-it-from-a-ddd--hexagonal-application)).
 
 ## To 1.2.4
 
