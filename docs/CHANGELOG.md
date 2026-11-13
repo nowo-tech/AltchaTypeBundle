@@ -17,6 +17,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- docs: demo screenshots regenerated on the UiKit base style
+
 ## [1.3.0] - 2026-11-13
 
 ### Added
