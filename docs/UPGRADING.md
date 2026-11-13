@@ -4,6 +4,7 @@
 
 - [Unreleased](#unreleased)
 - [To 1.3.0](#to-130)
+- [To 1.3.0](#to-130-1)
 - [To 1.2.4](#to-124)
 - [To 1.2.3](#to-123)
 - [To 1.2.2](#to-122)
@@ -16,6 +17,14 @@
 - [1.0.0](#100)
 
 ## Unreleased
+
+## To 1.3.0
+
+From **1.2.4**:
+
+```bash
+composer update nowo-tech/altcha-type-bundle
+```
 
 ## To 1.3.0
 

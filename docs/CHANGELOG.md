@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.3.0] - 2026-11-13](#130---2026-11-13)
 - [[1.2.4] - 2026-10-30](#124---2026-10-30)
 - [[1.2.3] - 2026-10-25](#123---2026-10-25)
 - [[1.2.2] - 2026-10-20](#122---2026-10-20)
@@ -15,6 +16,8 @@
 - [[1.0.0] - 2026-10-08](#100---2026-10-08)
 
 ## [Unreleased]
+
+## [1.3.0] - 2026-11-13
 
 ### Added
 
@@ -123,7 +126,8 @@ Dependency refresh (bundle and demos), php-cs-fixer ParallelConfig(2). See [UPGR
 - Flex recipe with a generated `ALTCHA_HMAC_SIGNATURE`.
 - ALTCHA v3 key-derivation algorithms per profile: `PBKDF2` (default), `SHA`, `ARGON2ID` (`ext-sodium`), `SCRYPT` (`ext-scrypt`), with bounded `cost` / `memory_cost` / `parallelism`; Argon2id/Scrypt widget workers published under `public/workers/`.
 
-[Unreleased]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.2.4...HEAD
+[Unreleased]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.2.4...v1.3.0
 [1.2.4]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.2.3...v1.2.4
 [1.2.3]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/nowo-tech/AltchaTypeBundle/compare/v1.2.1...v1.2.2
