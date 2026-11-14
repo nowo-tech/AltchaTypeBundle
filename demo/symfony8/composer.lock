@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e9b95a82a7b0aa62700d7a97e4890caa",
+    "content-hash": "fab36c127038b9d825400853fa281f1b",
     "packages": [
         {
             "name": "altcha-org/altcha",
@@ -191,11 +191,11 @@
         },
         {
             "name": "nowo-tech/altcha-type-bundle",
-            "version": "dev-main",
+            "version": "dev-chore/demo-screenshots",
             "dist": {
                 "type": "path",
                 "url": "/var/altcha-type-bundle",
-                "reference": "fa5a20b19257fae24b7b89708062e5a6b7b5d085"
+                "reference": "7b1ae05a8d890df1abcb61c31e760fe608e7bf49"
             },
             "require": {
                 "altcha-org/altcha": "^2.3",
@@ -448,16 +448,16 @@
         },
         {
             "name": "nowo-tech/ui-kit-bundle",
-            "version": "v2.49.0",
+            "version": "v2.51.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nowo-tech/UiKitBundle.git",
-                "reference": "38f5a1e26f360bda0fe7e1f88a5182c47081b8ce"
+                "reference": "bd14774abdb7fb3bb755bf8fb2bf4aaee0258d15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nowo-tech/UiKitBundle/zipball/38f5a1e26f360bda0fe7e1f88a5182c47081b8ce",
-                "reference": "38f5a1e26f360bda0fe7e1f88a5182c47081b8ce",
+                "url": "https://api.github.com/repos/nowo-tech/UiKitBundle/zipball/bd14774abdb7fb3bb755bf8fb2bf4aaee0258d15",
+                "reference": "bd14774abdb7fb3bb755bf8fb2bf4aaee0258d15",
                 "shasum": ""
             },
             "require": {
@@ -546,8 +546,8 @@
                 "issues": "https://github.com/nowo-tech/UiKitBundle/issues",
                 "source": "https://github.com/nowo-tech/UiKitBundle"
             },
-            "time": "2026-11-11T22:37:57+00:00",
-            "published-time": "2026-11-11T22:41:16+00:00"
+            "time": "2026-11-13T16:47:40+00:00",
+            "published-time": "2026-11-13T16:53:34+00:00"
         },
         {
             "name": "pentatrion/vite-bundle",

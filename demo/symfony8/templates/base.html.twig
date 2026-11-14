@@ -22,7 +22,7 @@
     } %}
     <header class="nowo-ui-header" data-testid="demo-masthead">
         <a class="nowo-ui-brand" href="{{ path('demo_index', { _locale: app.request.locale }) }}">{{ 'demo.brand'|trans }}</a>
-        <nav class="nowo-ui-menu" aria-label="{{ 'demo.language'|trans }}">
+        <nav class="nowo-ui-header__nav" aria-label="{{ 'demo.language'|trans }}">
             {% for loc in locales|default(['en', 'es']) %}
                 <a class="nowo-ui-link" href="{{ path('demo_index', { _locale: loc, case: current|default('contact') }) }}" title="{{ locale_labels[loc] }}"{% if app.request.locale == loc %} aria-current="page"{% endif %}>{{ loc|upper }}</a>
             {% endfor %}
