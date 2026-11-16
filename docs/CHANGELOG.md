@@ -21,6 +21,8 @@
 
 - docs: demo screenshots regenerated on the UiKit base style
 - demo: opt into UiKit 2.51 `nowo_ui_kit.base_stylesheet`, use `nowo-ui-header__nav` for the masthead nav, screenshots regenerated with the themed shell
+- Spec Kit: `specs/001-baseline/code-inventory.md` maps the two 1.3.0 service interfaces (46/46 production units) (REQ-SPECKIT-001/003)
+- CI: Dependabot npm updates for `demo/symfony8` and `demo/symfony8/e2e` (REQ-GH-002)
 
 ## [1.3.0] - 2026-11-13
 

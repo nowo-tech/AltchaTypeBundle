@@ -1,10 +1,10 @@
 # Code inventory — AltchaTypeBundle baseline (001)
 
-Last audited: 2026-10-08
+Last audited: 2026-11-16
 
 Scope: every file under `src/` loaded by integrators or the runtime. Co-located Vitest specs (`*.test.ts`, 4 files) are **excluded** (they are tests, covered by `vitest.config.ts`). Build outputs are documented as outputs of named sources (`FR-BUILD-*`).
 
-Audit command: `find src -type f ! -name '*.test.ts' | wc -l` → **44**.
+Audit command: `find src -type f ! -name '*.test.ts' | wc -l` → **46**.
 
 ## Bundle and DI
 
@@ -28,7 +28,9 @@ Audit command: `find src -type f ! -name '*.test.ts' | wc -l` → **44**.
 | --- | --- | --- |
 | `src/Service/AltchaClientFactory.php` | Services | FR-SVC-1, FR-SVC-7 |
 | `src/Service/AltchaChallengeFactory.php` | Services | FR-SVC-2, FR-SVC-7 |
+| `src/Service/AltchaChallengeFactoryInterface.php` | Services (port, REQ-ARCH-001) | FR-SVC-2 |
 | `src/Service/AltchaVerifier.php` | Services | FR-SVC-3, FR-SVC-4, FR-SVC-5, FR-SVC-6, FR-SVC-7 |
+| `src/Service/AltchaVerifierInterface.php` | Services (port, REQ-ARCH-001) | FR-SVC-3 |
 | `src/Service/Sentinel/TransportTrackingHttpClient.php` | Services | FR-SVC-5 |
 
 ## Profiles
@@ -106,7 +108,7 @@ Audit command: `find src -type f ! -name '*.test.ts' | wc -l` → **44**.
 | --- | --- |
 | Bundle and DI | 5 |
 | Controller | 1 |
-| Services | 4 |
+| Services | 6 |
 | Profiles | 1 |
 | Form and validation | 3 |
 | Twig | 1 |
@@ -114,6 +116,6 @@ Audit command: `find src -type f ! -name '*.test.ts' | wc -l` → **44**.
 | Translations | 7 |
 | Assets | 6 |
 | Build outputs | 4 |
-| **Total mapped** | **44 / 44** |
+| **Total mapped** | **46 / 46** |
 
 Tests: PHPUnit `tests/Unit/**` (one test class per production PHP class); Vitest co-located specs; Playwright demo e2e.
