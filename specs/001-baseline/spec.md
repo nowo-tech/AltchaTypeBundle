@@ -112,7 +112,7 @@
 - **SC-1** — `make coverage-check`: 100% PHP lines; `make assets-test`: 100% TS (bootstrap `altcha-type.ts` excluded).
 - **SC-2** — `make phpstan` (level 8, `ignoreErrors: []`) and `make igor` clean.
 - **SC-3** — Demo e2e (`make -C demo/symfony8 test-e2e`) solves a real challenge and passes server verification.
-- **SC-4** — Inventory maps **44/44** production units under `src/`.
+- **SC-4** — Inventory maps **46/46** production units under `src/`.
 - **SC-5** — Demo e2e solves an **Argon2id** (ALTCHA v3) challenge in the browser and passes server verification.
 
 ## Non-goals
