@@ -48,7 +48,7 @@ test.describe('AltchaType demo', () => {
       form.submit();
     });
     await expect(page.locator('.nowo-ui-flash--success')).toHaveCount(0);
-    await expect(page.locator('.invalid-feedback, .form-error-message').first()).toBeVisible();
+    await expect(page.locator('.invalid-feedback, .form-error-message, .nowo-ui-field__error, .nowo-ui-form-errors__list').first()).toBeVisible();
   });
 
   test('ALTCHA v3 Argon2id profile solves in the browser and passes server verification', async ({ page }) => {
