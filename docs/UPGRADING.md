@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.4.1](#to-141)
 - [To 1.4.0](#to-140)
 - [To 1.3.0](#to-130)
 - [To 1.2.4](#to-124)
@@ -18,6 +19,10 @@
 
 ## Unreleased
 
+## To 1.4.1
+
+From **1.4.0**: no action. A cache pool that throws during the replay check now rejects the payload (logged as a warning) instead of causing a 500. Without `symfony/lock` the replay check is still best effort; install it with a shared store and set `replay_protection.require_lock: true`.
+
 ## To 1.4.0
 
 From **1.3.0**:
@@ -28,7 +33,7 @@ composer update nowo-tech/altcha-type-bundle
 
 From **1.3.0**: no config change is required.
 
-- **Fail closed:** the replay check now rejects the payload when the lock store cannot be reached (it used to throw, i.e. a 500) or when the cache pool cannot save the "used" item (it used to accept the payload without recording it). While Redis or the lock store is down, protected forms fail validation.
+- **Fail closed:** the replay check now rejects the payload when the lock store cannot be reached (it used to throw, i.e. a 500) or when the cache pool cannot save the "used" item (it used to accept the payload without recording it). While Redis or the lock store is down, protected forms fail validation. This applies to any pool whose `save()` returns `false`, not only "Redis down": for example APCu disabled in the CLI, or a `ChainAdapter` with one failing layer reject every submission.
 - **Warning:** without a lock factory the bundle writes a warning to the container compiler log (and a debug line per check). To fail the build instead, set `replay_protection.require_lock: true`.
 - **Several servers:** use a shared lock store and a shared cache pool ([CONCURRENCY.md](CONCURRENCY.md#lock-store-and-cache-pool)).
 

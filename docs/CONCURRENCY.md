@@ -24,7 +24,7 @@ The bundle has no entities, no Doctrine/DBAL writes, no commands and no message 
 
 A solved challenge is accepted once ("only one" rule). `consume()` runs:
 
-1. acquire the per-challenge lock (blocking; at most 10 s, the lock TTL, behind another holder);
+1. acquire the per-challenge lock (blocking; with an expiring store such as Redis, DBAL or PDO the wait is at most 10 s, the lock TTL; FlockStore and SemaphoreStore block until the holder releases or its process dies);
 2. read the item; if it is a hit, reject (replay);
 3. write the item with a TTL equal to the challenge's remaining lifetime;
 4. release the lock (a failed release is logged; the lock then expires after its TTL).
@@ -72,6 +72,8 @@ The race tests check both lock cases with real OS processes (see [Tests](#tests)
 
 When replay protection is enabled and the lock factory service does not exist (`symfony/lock` not installed, `framework.lock` disabled, or `lock_factory: null`), the replay check is best effort.
 
+**Without `symfony/lock` the replay check is still best effort by default in 1.4.x** (the package is only a `suggest`): two concurrent submissions of the same payload can both pass. For production, install `symfony/lock`, configure a shared store (Redis, DBAL or PDO when there are several servers) and set `replay_protection.require_lock: true`.
+
 Decision: **warn by default, fail on request.**
 
 - By default the bundle keeps working (no BC break for hosts without `symfony/lock`): `ReplayLockPass` writes a warning to the container compiler log at build time (`var/cache/<env>/*Compiler.log`), and `AltchaVerifier` logs a `debug` line on each best-effort check. The verifier keeps no "already warned" flag, so it stays stateless in worker mode (Igor).
@@ -84,7 +86,7 @@ The bundle does not tie the failure to `kernel.debug`: a missing lock is a deplo
 **Not applicable.** No lock conflict, deadlock, lock-wait timeout or serialization failure reaches an HTTP answer of the bundle:
 
 - the bundle has no database writes, so it never sees deadlocks or serialization failures;
-- the replay lock is acquired in blocking mode: a second submission waits (at most the 10 s TTL), it does not get a conflict;
+- the replay lock is acquired in blocking mode: a second submission waits (bounded by the 10 s TTL only with expiring stores such as Redis, DBAL or PDO; FlockStore and SemaphoreStore wait until the holder releases or dies), it does not get a conflict;
 - an unavailable lock store or cache rejects the payload as a form validation error of the host's form;
 - the only route the bundle answers itself (`AltchaChallengeController`, GET) writes nothing.
 

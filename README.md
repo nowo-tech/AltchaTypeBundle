@@ -49,7 +49,7 @@ Looking for **Symfony ALTCHA**, **ALTCHA FormType**, **privacy-friendly captcha 
 - ✅ **Named profiles** — `default`, `low`, `high`, `contact`, `invisible` (REQ-CFG-001)
 - ✅ **Server validation** — `AltchaValid` constraint via official `altcha-org/altcha` PHP library (v2, PBKDF2) and the ALTCHA v3 widget
 - ✅ **ALTCHA v3 algorithms** — PBKDF2 (default), SHA, memory-hard **Argon2id** and **Scrypt** per profile (workers shipped)
-- ✅ **Single-use payloads** — replay protection through a PSR-6 cache pool (enabled by default)
+- ✅ **Single-use payloads** — replay protection through a PSR-6 cache pool (enabled by default). Without `symfony/lock` the check is best effort in 1.4.x: install `symfony/lock` with a shared store and set `replay_protection.require_lock: true`
 - ✅ **Profile-bound challenges** — the profile is signed into the challenge; cheaper solutions are rejected
 - ✅ **Optional Sentinel** — remote verification (verdict is final; local fallback only on transport errors, opt-in)
 - ✅ **Test mode** — `enable: false` skips verification (demo / PHPUnit)
@@ -126,6 +126,7 @@ nowo_altcha_type:
   debug: false
   replay_protection:
     cache_pool: cache.app # use a shared pool with several hosts
+    require_lock: true # recommended in production (needs symfony/lock + a shared store)
   profiles:
     default:
       cost: 5000
