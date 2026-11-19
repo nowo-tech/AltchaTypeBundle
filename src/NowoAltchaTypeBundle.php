@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\AltchaTypeBundle;
 
 use Nowo\AltchaTypeBundle\DependencyInjection\AltchaTypeExtension;
+use Nowo\AltchaTypeBundle\DependencyInjection\Compiler\ReplayLockPass;
 use Nowo\AltchaTypeBundle\DependencyInjection\Compiler\TwigPathsPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -27,13 +28,14 @@ final class NowoAltchaTypeBundle extends Bundle
     }
 
     /**
-     * Registers the Twig paths compiler pass.
+     * Registers the Twig paths and replay-lock compiler passes.
      *
      * @param ContainerBuilder $container Container builder
      */
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new TwigPathsPass());
+        $container->addCompilerPass(new ReplayLockPass());
     }
 
     /**

@@ -6,7 +6,7 @@ This bundle is **FrankenPHP worker mode friendly**. Version `v1.2.4`, re-checked
 
 - Bundle extension is constructed once in `NowoAltchaTypeBundle::__construct` (no request-scoped mutation).
 - Services (`AltchaClientFactory`, `AltchaChallengeFactory`, `AltchaVerifier`, profile registry) are stateless per request; no static mutable caches.
-- Challenge endpoint returns a fresh signed challenge each GET. Replay protection stores used challenges in an injected PSR-6 pool (`cache.app` by default), never in process memory, so it is shared across workers.
+- Challenge endpoint returns a fresh signed challenge each GET. Replay protection stores used challenges in an injected PSR-6 pool (`cache.app` by default), never in process memory, so it is shared across workers. The read and write run under a Symfony Lock created per check (`autoRelease: false`, released in `finally`); `AltchaVerifier` keeps no mutable state. Concurrency details: [CONCURRENCY.md](CONCURRENCY.md).
 - `AltchaChallengeFactory` and `AltchaVerifier` use an injected PSR-20 clock; the Sentinel `TransportTrackingHttpClient` is created per verification (and implements `ResetInterface`).
 - No `pcntl_fork`, long-lived sockets, or kernel-reset anti-patterns in `src/`.
 

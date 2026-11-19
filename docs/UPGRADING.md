@@ -17,6 +17,12 @@
 
 ## Unreleased
 
+From **1.3.0**: no config change is required.
+
+- **Fail closed:** the replay check now rejects the payload when the lock store cannot be reached (it used to throw, i.e. a 500) or when the cache pool cannot save the "used" item (it used to accept the payload without recording it). While Redis or the lock store is down, protected forms fail validation.
+- **Warning:** without a lock factory the bundle writes a warning to the container compiler log (and a debug line per check). To fail the build instead, set `replay_protection.require_lock: true`.
+- **Several servers:** use a shared lock store and a shared cache pool ([CONCURRENCY.md](CONCURRENCY.md#lock-store-and-cache-pool)).
+
 ## To 1.3.0
 
 From **1.2.4**: no action. `AltchaVerifierInterface` and `AltchaChallengeFactoryInterface` are new and additive; the class service ids still work. To replace the verifier or the challenge factory, alias the interface to your service (see [USAGE](USAGE.md#using-it-from-a-ddd--hexagonal-application)).

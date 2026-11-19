@@ -24,6 +24,8 @@ final class ConfigurationTest extends TestCase
         self::assertSame('default', $processed['default_profile']);
         self::assertTrue($processed['replay_protection']['enabled']);
         self::assertSame('cache.app', $processed['replay_protection']['cache_pool']);
+        self::assertSame('lock.factory', $processed['replay_protection']['lock_factory']);
+        self::assertFalse($processed['replay_protection']['require_lock']);
         self::assertSame('form_div_layout.html.twig', $processed['form_theme']);
         self::assertFalse($processed['debug']);
         self::assertSame('SHA-256', $processed['hmac_algorithm']);
