@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.4.0](#to-140)
 - [To 1.3.0](#to-130)
 - [To 1.2.4](#to-124)
 - [To 1.2.3](#to-123)
@@ -16,6 +17,14 @@
 - [1.0.0](#100)
 
 ## Unreleased
+
+## To 1.4.0
+
+From **1.3.0**:
+
+```bash
+composer update nowo-tech/altcha-type-bundle
+```
 
 From **1.3.0**: no config change is required.
 
