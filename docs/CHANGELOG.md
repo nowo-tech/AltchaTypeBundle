@@ -18,6 +18,14 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- A cache pool that throws during the replay check (custom PSR-6 pool, `Psr\Cache\InvalidArgumentException`) now rejects the payload with a warning (fail closed) instead of a 500.
+
+### Changed
+
+- Docs: the replay lock wait is bounded by the TTL only with expiring stores (Redis, DBAL, PDO); `FlockStore` and `SemaphoreStore` block until release. Docs and README state that without `symfony/lock` the replay check is best effort by default and recommend `require_lock: true`. UPGRADING notes that any pool whose `save()` returns false rejects every submission.
+
 ## [1.4.0] - 2026-11-19
 
 ### Added

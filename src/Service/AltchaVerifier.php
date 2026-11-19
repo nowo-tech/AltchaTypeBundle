@@ -221,6 +221,8 @@ final class AltchaVerifier implements AltchaVerifierInterface
         }
 
         // Serialize "read → check → write" per challenge. Fail closed when the lock store is unavailable.
+        // The blocking wait is bounded by the TTL only with expiring stores (Redis, DBAL, PDO); FlockStore and
+        // SemaphoreStore block until the holder releases or its process dies.
         // autoRelease false: released here only, never again from the lock's destructor.
         $lock = $this->lockFactory->createLock($key, self::REPLAY_LOCK_TTL, false);
         try {
@@ -254,16 +256,25 @@ final class AltchaVerifier implements AltchaVerifierInterface
      */
     private function checkAndMark(CacheItemPoolInterface $replayCache, string $key, float $expiresAt): bool
     {
-        $item = $replayCache->getItem($key);
-        if ($item->isHit()) {
-            $this->logger?->info('ALTCHA payload rejected: challenge already used (replay).');
+        try {
+            $item = $replayCache->getItem($key);
+            if ($item->isHit()) {
+                $this->logger?->info('ALTCHA payload rejected: challenge already used (replay).');
+
+                return false;
+            }
+
+            $ttl = (int) ceil($expiresAt - (float) $this->clock->now()->format('U.u'));
+            $item->set(true)->expiresAfter(max(1, $ttl));
+            $saved = $replayCache->save($item);
+        } catch (Throwable $e) {
+            // Custom pools may throw (Psr\Cache\InvalidArgumentException, backend errors). Log the class only: no payload, no secret.
+            $this->logger?->warning('ALTCHA payload rejected: the replay cache failed ({class}).', ['class' => $e::class]);
 
             return false;
         }
 
-        $ttl = (int) ceil($expiresAt - (float) $this->clock->now()->format('U.u'));
-        $item->set(true)->expiresAfter(max(1, $ttl));
-        if (!$replayCache->save($item)) {
+        if (!$saved) {
             $this->logger?->warning('ALTCHA payload rejected: the replay cache could not record the challenge.');
 
             return false;

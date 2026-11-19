@@ -22,6 +22,7 @@ use Psr\Cache\CacheItemInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\CacheItem;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Lock\LockFactory;
 
@@ -433,5 +434,24 @@ final class AltchaVerifierTest extends TestCase
 
         self::assertFalse($verifier->verify($this->solvedPayload(), 'default'));
         self::assertCount(1, $logger->matching('could not record the challenge'));
+    }
+
+    #[Test]
+    public function cachePoolThatThrowsFailsClosedWithoutLeakingThePayload(): void
+    {
+        $logger = new RecordingLogger();
+        $cache  = new class extends ArrayAdapter {
+            public function getItem(mixed $key): CacheItem
+            {
+                throw new RuntimeException('backend down secret-detail');
+            }
+        };
+        $verifier = new AltchaVerifier($this->clientFactory(), true, [], $cache, $logger, null, null, null, new LockFactory(new RecordingLockStore()));
+        $payload  = $this->solvedPayload();
+
+        self::assertFalse($verifier->verify($payload, 'default'));
+        self::assertCount(1, $logger->matching('the replay cache failed'));
+        self::assertCount(0, $logger->matching($payload));
+        self::assertCount(0, $logger->matching('secret-detail'));
     }
 }
