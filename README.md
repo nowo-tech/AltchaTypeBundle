@@ -215,6 +215,7 @@ Root `make release-check` runs the full QA chain (REQ-MAKE-002).
 - [Theming](docs/THEMING.md) — form themes, CSS hooks, template overrides
 - [Demo with FrankenPHP](docs/DEMO-FRANKENPHP.md) (includes worker mode)
 - [FrankenPHP worker audit (`FRANKENPHP_RESET_KERNEL` unset/false)](docs/FRANKENPHP-WORKER-AUDIT.md)
+- [Concurrency (REQ-RUNTIME-003)](docs/CONCURRENCY.md) — replay check, lock store, residual risks
 - [GitHub Actions CI requirements](docs/GITHUB_CI.md)
 - [PSR evaluation (REQ-CS-007)](docs/PSR.md)
 - [GitHub About fields](docs/GITHUB.md)

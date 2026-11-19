@@ -61,6 +61,7 @@
         "phpunit/phpunit": "^10.0",
         "rector/rector": "^2.0",
         "symfony/lock": "^6.4 || ^7.0 || ^8.0",
+        "symfony/process": "^6.4 || ^7.0 || ^8.0",
         "vincentlanglet/twig-cs-fixer": "^4.0"
     },
     "autoload": {

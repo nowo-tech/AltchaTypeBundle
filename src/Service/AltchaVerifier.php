@@ -16,6 +16,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Clock\NativeClock;
+use Symfony\Component\Lock\Exception\ExceptionInterface as LockExceptionInterface;
 use Symfony\Component\Lock\LockFactory;
 use Throwable;
 
@@ -30,8 +31,11 @@ use function strlen;
  * (altcha-org), and single use (replay cache) when a pool is configured.
  *
  * Replay check: with a Symfony {@see LockFactory} the "already used?" read and the "mark used" write
- * run under a lock, so two concurrent submissions of the same payload cannot both pass. Without a
- * lock factory the check is best-effort (a narrow race between the cache read and write remains).
+ * run under a lock, so two concurrent submissions of the same payload cannot both pass (the lock store
+ * and the cache pool must be shared by every server). Without a lock factory the check is best-effort
+ * (a narrow race between the cache read and write remains; ReplayLockPass warns at build time).
+ * The check fails closed: when the lock store or the cache pool cannot record the use, the payload is
+ * rejected. See docs/CONCURRENCY.md.
  *
  * Sentinel: the profile signed into the challenge (when the payload carries one) must match the
  * expected profile before the payload is sent to Sentinel.
@@ -209,26 +213,63 @@ final class AltchaVerifier implements AltchaVerifierInterface
 
         $key = self::REPLAY_KEY_PREFIX . hash('sha256', $signature);
 
-        // Serialize "read → check → write" per challenge when a lock factory is available.
-        $lock = $this->lockFactory?->createLock($key, self::REPLAY_LOCK_TTL);
-        $lock?->acquire(true);
+        if (!$this->lockFactory instanceof LockFactory) {
+            // Stateless (worker mode): the build-time warning comes from ReplayLockPass; this line is for debugging.
+            $this->logger?->debug('ALTCHA replay check runs without a lock factory (best effort, see docs/CONCURRENCY.md).');
+
+            return $this->checkAndMark($this->replayCache, $key, $expiresAt);
+        }
+
+        // Serialize "read → check → write" per challenge. Fail closed when the lock store is unavailable.
+        // autoRelease false: released here only, never again from the lock's destructor.
+        $lock = $this->lockFactory->createLock($key, self::REPLAY_LOCK_TTL, false);
+        try {
+            $lock->acquire(true);
+        } catch (LockExceptionInterface $e) {
+            $this->logger?->warning('ALTCHA payload rejected: replay lock unavailable ({message}).', ['message' => $e->getMessage()]);
+
+            return false;
+        }
 
         try {
-            $item = $this->replayCache->getItem($key);
-            if ($item->isHit()) {
-                $this->logger?->info('ALTCHA payload rejected: challenge already used (replay).');
-
-                return false;
-            }
-
-            $ttl = (int) ceil($expiresAt - (float) $this->clock->now()->format('U.u'));
-            $item->set(true)->expiresAfter(max(1, $ttl));
-            $this->replayCache->save($item);
-
-            return true;
+            return $this->checkAndMark($this->replayCache, $key, $expiresAt);
         } finally {
-            $lock?->release();
+            try {
+                $lock->release();
+            } catch (LockExceptionInterface $e) {
+                // The lock expires on its own after REPLAY_LOCK_TTL; the verdict stands.
+                $this->logger?->warning('ALTCHA replay lock release failed ({message}).', ['message' => $e->getMessage()]);
+            }
         }
+    }
+
+    /**
+     * Reads the replay item and marks it used. Fails closed: a challenge that cannot be recorded is rejected.
+     *
+     * @param CacheItemPoolInterface $replayCache Replay pool
+     * @param string $key Replay-cache key
+     * @param float $expiresAt Challenge expiry as a UNIX timestamp
+     *
+     * @return bool True when the challenge was unused and is now recorded
+     */
+    private function checkAndMark(CacheItemPoolInterface $replayCache, string $key, float $expiresAt): bool
+    {
+        $item = $replayCache->getItem($key);
+        if ($item->isHit()) {
+            $this->logger?->info('ALTCHA payload rejected: challenge already used (replay).');
+
+            return false;
+        }
+
+        $ttl = (int) ceil($expiresAt - (float) $this->clock->now()->format('U.u'));
+        $item->set(true)->expiresAfter(max(1, $ttl));
+        if (!$replayCache->save($item)) {
+            $this->logger?->warning('ALTCHA payload rejected: the replay cache could not record the challenge.');
+
+            return false;
+        }
+
+        return true;
     }
 
     /**

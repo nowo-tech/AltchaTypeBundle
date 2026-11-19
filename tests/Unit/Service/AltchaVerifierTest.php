@@ -18,6 +18,7 @@ use Nowo\AltchaTypeBundle\Service\AltchaVerifier;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Psr\Cache\CacheItemInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -375,5 +376,62 @@ final class AltchaVerifierTest extends TestCase
         self::assertTrue($verifier->verify($this->solvedPayload('default'), 'default'));
         // Payloads that carry no signed profile (e.g. Sentinel-issued challenges) are left to Sentinel.
         self::assertTrue($verifier->verify('opaque', 'default'));
+    }
+
+    #[Test]
+    public function bestEffortModeLogsAtDebugLevelOnEachCheck(): void
+    {
+        $logger   = new RecordingLogger();
+        $verifier = new AltchaVerifier($this->clientFactory(), true, [], new ArrayAdapter(), $logger);
+        $payload  = $this->solvedPayload();
+
+        self::assertTrue($verifier->verify($payload, 'default'));
+        self::assertFalse($verifier->verify($payload, 'default'));
+        self::assertTrue($verifier->verify($this->solvedPayload(), 'default'));
+
+        // Stateless in worker mode: one debug line per replay check (the build-time warning is ReplayLockPass).
+        self::assertCount(3, $logger->matching('without a lock factory'));
+        self::assertStringStartsWith('debug: ', $logger->matching('without a lock factory')[0]);
+    }
+
+    #[Test]
+    public function unavailableLockStoreFailsClosed(): void
+    {
+        $logger   = new RecordingLogger();
+        $cache    = new ArrayAdapter();
+        $verifier = new AltchaVerifier($this->clientFactory(), true, [], $cache, $logger, null, null, null, new LockFactory(new FailingLockStore(true, false)));
+
+        self::assertFalse($verifier->verify($this->solvedPayload(), 'default'));
+        self::assertCount(1, $logger->matching('replay lock unavailable'));
+        // Nothing was recorded, so the payload stays usable once the lock store is back.
+        self::assertSame([], $cache->getValues());
+    }
+
+    #[Test]
+    public function lockReleaseFailureKeepsTheVerdict(): void
+    {
+        $logger   = new RecordingLogger();
+        $verifier = new AltchaVerifier($this->clientFactory(), true, [], new ArrayAdapter(), $logger, null, null, null, new LockFactory(new FailingLockStore(false, true)));
+        $payload  = $this->solvedPayload();
+
+        self::assertTrue($verifier->verify($payload, 'default'));
+        self::assertFalse($verifier->verify($payload, 'default'));
+        self::assertCount(2, $logger->matching('replay lock release failed'));
+    }
+
+    #[Test]
+    public function cacheThatCannotRecordTheChallengeFailsClosed(): void
+    {
+        $logger = new RecordingLogger();
+        $cache  = new class extends ArrayAdapter {
+            public function save(CacheItemInterface $item): bool
+            {
+                return false;
+            }
+        };
+        $verifier = new AltchaVerifier($this->clientFactory(), true, [], $cache, $logger, null, null, null, new LockFactory(new RecordingLockStore()));
+
+        self::assertFalse($verifier->verify($this->solvedPayload(), 'default'));
+        self::assertCount(1, $logger->matching('could not record the challenge'));
     }
 }

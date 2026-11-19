@@ -17,7 +17,17 @@
 
 ## [Unreleased]
 
+### Added
+
+- `replay_protection.require_lock` (default `false`): the container fails to build when replay protection is on and the lock factory service does not exist. Without it a warning is written to the container compiler log, and each best-effort check logs a debug line (REQ-RUNTIME-003).
+- `docs/CONCURRENCY.md`: write-path table, lock store and cache pool requirements for multi-server deploys, residual risks (REQ-RUNTIME-003).
+- Race tests with real OS processes (`tests/Integration/Race`): a shared lock store lets exactly one of four concurrent submissions of one payload pass; a local lock store per server and the best-effort mode let both pass (documented).
+- CI: demo lock check (`.scripts/check-demo-lock.py`): each `demo/*/composer.lock` must satisfy the bundle's own requirements.
+- Dev: `symfony/process` in `require-dev` (race-test workers with a hard timeout).
+
 ### Changed
+
+- Replay check fails closed: an unreachable lock store rejects the payload (it used to throw), and a cache pool that cannot record the use rejects it (it used to accept it unrecorded). A failed lock release is logged and keeps the verdict (the lock is created with `autoRelease: false`, so its destructor no longer releases it a second time).
 
 - docs: demo screenshots regenerated on the UiKit base style
 - demo: opt into UiKit 2.51 `nowo_ui_kit.base_stylesheet`, use `nowo-ui-header__nav` for the masthead nav, screenshots regenerated with the themed shell
