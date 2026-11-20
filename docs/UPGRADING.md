@@ -4,7 +4,6 @@
 
 - [Unreleased](#unreleased)
 - [To 1.4.1](#to-141)
-- [To 1.4.1](#to-141-1)
 - [To 1.4.0](#to-140)
 - [To 1.3.0](#to-130)
 - [To 1.2.4](#to-124)
@@ -27,8 +26,6 @@ From **1.4.0**:
 ```bash
 composer update nowo-tech/altcha-type-bundle
 ```
-
-## To 1.4.1
 
 From **1.4.0**: no action. A cache pool that throws during the replay check now rejects the payload (logged as a warning) instead of causing a 500. Without `symfony/lock` the replay check is still best effort; install it with a shared store and set `replay_protection.require_lock: true`.
 
