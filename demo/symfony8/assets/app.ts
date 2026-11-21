@@ -1,10 +1,10 @@
 /**
  * Demo app entry (Pentatrion Vite + TypeScript).
- * Starts Stimulus and registers the bundle's altcha-type controller (use_stimulus: true).
+ * Starts Stimulus and registers the bundle's altcha-type controller (use_stimulus: true). The widget stylesheet is the
+ * bundle's own asset (/bundles/nowoaltchatype/altcha-type.css, linked by templates/base.html.twig).
  */
 import { Application } from '@hotwired/stimulus';
 import AltchaTypeController from '@bundle/controllers/altcha_type_controller.ts';
-import '@bundle/css/altcha-type.css';
 
 declare const __ALTCHA_TYPE_BUILD_TIME__: string;
 
