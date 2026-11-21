@@ -37,7 +37,7 @@ final class DemoController extends AbstractController
     #[Route('/{_locale}', name: 'demo_index', requirements: ['_locale' => 'en|es|it|fr|pt|de|nl'], methods: ['GET'])]
     public function index(Request $request): Response
     {
-        $case = (string) $request->query->get('case', '');
+        $case  = (string) $request->query->get('case', '');
         $valid = in_array($case, self::USE_CASES, true);
 
         return $this->redirectToRoute(
