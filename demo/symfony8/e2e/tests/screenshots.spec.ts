@@ -3,76 +3,37 @@ import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 /**
- * REQ-DEMO-013 — full demo frame: navbar toolbar + case pills + form with
- * ALTCHA widget (+ Symfony WebProfiler when present).
+ * REQ-DEMO-013 — full demo frame: the demo platform shell (nav of the cases) + form with the ALTCHA widget, without the
+ * Symfony WebProfiler toolbar.
  */
 const outDir = process.env.SCREENSHOT_DIR
   ? resolve(process.env.SCREENSHOT_DIR)
   : resolve(__dirname, '../../../../docs/images/demo');
 
-type Box = { x: number; y: number; width: number; height: number };
-
-async function boxOf(
-  page: import('@playwright/test').Page,
-  selector: string,
-): Promise<Box | null> {
-  const loc = page.locator(selector).first();
-  if ((await loc.count()) === 0) {
-    return null;
-  }
-  return loc.boundingBox();
+async function hideProfiler(page: import('@playwright/test').Page): Promise<void> {
+  await page.addStyleTag({ content: '.sf-toolbar,.sf-minitoolbar,[id^="sfwdt"]{display:none!important}' });
 }
 
+/** Grows the viewport so the whole case card fits above the fold, without the Symfony toolbar. */
 async function fitViewportToDemo(page: import('@playwright/test').Page) {
-  const main = await boxOf(page, 'main');
-  const nav = await boxOf(page, 'header.nowo-ui-header');
-  const top = nav?.y ?? 0;
-  const bottom = (main?.y ?? 0) + (main?.height ?? 800);
-  const height = Math.min(1600, Math.max(900, Math.ceil(bottom - top + 96)));
+  const card = await page.locator('[data-testid="demo-case"]').boundingBox();
+  const height = Math.min(1600, Math.max(900, Math.ceil((card?.y ?? 0) + (card?.height ?? 700) + 96)));
   await page.setViewportSize({ width: 1280, height });
-}
-
-/** Navbar → main → profiler (union), padded. */
-async function clipDemoFrame(page: import('@playwright/test').Page): Promise<Box> {
-  const nav = await boxOf(page, 'header.nowo-ui-header');
-  const main = await boxOf(page, 'main');
-  const profiler =
-    (await boxOf(page, '.sf-toolbar')) ?? (await boxOf(page, '.sf-minitoolbar'));
-  if (!nav || !main) {
-    throw new Error('Missing header.nowo-ui-header or main for AltchaType screenshot clip');
-  }
-  const boxes = [nav, main, profiler].filter(Boolean) as Box[];
-  const x = Math.min(...boxes.map((b) => b.x));
-  const y = Math.min(...boxes.map((b) => b.y));
-  const right = Math.max(...boxes.map((b) => b.x + b.width));
-  const bottom = Math.max(...boxes.map((b) => b.y + b.height));
-  const pad = 8;
-  return {
-    x: Math.max(0, x - pad),
-    y: Math.max(0, y - pad),
-    width: right - x + pad * 2,
-    height: bottom - y + pad * 2,
-  };
 }
 
 async function prepareDemoPage(page: import('@playwright/test').Page, path: string) {
   await page.setViewportSize({ width: 1280, height: 1100 });
   await page.goto(path);
-  await expect(page.locator('header.nowo-ui-header .nowo-ui-brand')).toBeVisible();
-  await expect(page.locator('main .nowo-ui-card')).toBeVisible();
+  await expect(page.getByTestId('demo-platform')).toBeVisible();
+  await expect(page.getByTestId('demo-case')).toBeVisible();
   await expect(page.locator('.nowo-altcha-type altcha-widget').first()).toBeAttached();
-  await page
-    .locator('.sf-toolbar .sf-toolbar-block, .sf-toolbar-status, .sf-minitoolbar')
-    .first()
-    .waitFor({ state: 'visible', timeout: 10000 })
-    .catch(() => {});
+  await hideProfiler(page);
   await fitViewportToDemo(page);
 }
 
 async function captureDemo(page: import('@playwright/test').Page, file: string) {
   await fitViewportToDemo(page);
-  const clip = await clipDemoFrame(page);
-  await page.screenshot({ path: resolve(outDir, file), clip });
+  await page.screenshot({ path: resolve(outDir, file) });
 }
 
 /** Clicks the ALTCHA checkbox and waits until the payload reaches the hidden input. */
@@ -87,15 +48,15 @@ test.beforeAll(() => {
 });
 
 test.describe('AltchaType screenshots (full demo context)', () => {
-  test('overview — navbar + low case, widget unverified', async ({ page }) => {
-    await prepareDemoPage(page, '/en?case=low');
-    await expect(page.locator('main .nowo-ui-tabs .nowo-ui-tabs__item--active')).toContainText(/Low/i);
+  test('overview — shell + low case, widget unverified', async ({ page }) => {
+    await prepareDemoPage(page, '/en/low');
+    await expect(page.locator('[data-nowo-ui-aside] [aria-current="page"]')).toContainText(/Low/i);
     await expect(page.locator('.nowo-altcha-type [data-altcha-type-target="input"]').first()).toHaveValue('');
     await captureDemo(page, 'overview.png');
   });
 
-  test('interaction — navbar + low case, widget verified', async ({ page }) => {
-    await prepareDemoPage(page, '/en?case=low');
+  test('interaction — shell + low case, widget verified', async ({ page }) => {
+    await prepareDemoPage(page, '/en/low');
     await solveAltcha(page);
     await captureDemo(page, 'interaction.png');
   });

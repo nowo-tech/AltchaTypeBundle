@@ -5,6 +5,7 @@ demo:
   heading: 'ALTCHA for Symfony forms'
   description: 'Self-hosted proof-of-work verification. No cookies, no fingerprinting, GDPR-friendly.'
   language: 'Language'
+  nav_cases: 'Casi d''uso'
   language_switch_hint: 'Language:'
   form_submitted: 'Accepted. Payload: %data%'
   close: 'Close'

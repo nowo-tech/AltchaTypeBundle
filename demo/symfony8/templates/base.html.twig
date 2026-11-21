@@ -1,39 +1,31 @@
-{#- REQ-DEMO-014: the demo shell is UiKit's admin layout with UiKit's default theme (nowo-ui.css from the bundle's own
-    asset package, no CSS framework, no CDN). The Vite entry only carries the bundle's own altcha-type controller/CSS. -#}
-{% extends '@NowoUiKit/layout/admin.html.twig' %}
-
+{#- REQ-DEMO-014: the demo runs inside UiKit's shared demo platform shell. This file only declares the demo. The Vite entry
+    carries the bundle's own altcha-type Stimulus controller; the stylesheet is the bundle's own asset. -#}
+{% extends '@NowoUiKit/demo_platform/layout.html.twig' %}
+{% set _loc = app.request.locale %}
+{% set nowo_ui_demo_platform = {
+    bundle: 'Altcha Type',
+    home_route: 'demo_case',
+    home_params: {_locale: _loc, case: 'contact'},
+    repository: 'https://github.com/nowo-tech/AltchaTypeBundle',
+    translation_domain: 'messages',
+    locales: ['en', 'es', 'it', 'fr', 'pt', 'de', 'nl'],
+    nav: [
+        {label: 'demo.case.contact.nav', route: 'demo_case', params: {_locale: _loc, case: 'contact'}, section: 'demo.nav_cases', testid: 'demo-nav-demo_case-contact'},
+        {label: 'demo.case.low.nav', route: 'demo_case', params: {_locale: _loc, case: 'low'}, section: 'demo.nav_cases', testid: 'demo-nav-demo_case-low'},
+        {label: 'demo.case.high.nav', route: 'demo_case', params: {_locale: _loc, case: 'high'}, section: 'demo.nav_cases', testid: 'demo-nav-demo_case-high'},
+        {label: 'demo.case.invisible.nav', route: 'demo_case', params: {_locale: _loc, case: 'invisible'}, section: 'demo.nav_cases', testid: 'demo-nav-demo_case-invisible'},
+        {label: 'demo.case.newsletter.nav', route: 'demo_case', params: {_locale: _loc, case: 'newsletter'}, section: 'demo.nav_cases', testid: 'demo-nav-demo_case-newsletter'},
+        {label: 'demo.case.memory_hard.nav', route: 'demo_case', params: {_locale: _loc, case: 'memory_hard'}, section: 'demo.nav_cases', testid: 'demo-nav-demo_case-memory_hard'},
+    ],
+} %}
 {% block nowo_ui_document_title %}{% block title %}{{ 'demo.title'|trans }}{% endblock %}{% endblock %}
 
 {% block nowo_ui_styles %}
     {{ parent() }}
-    {{ vite_entry_link_tags('app') }}
-    {% block styles %}{% endblock %}
+    <link rel="stylesheet" href="{{ asset('bundles/nowoaltchatype/altcha-type.css') }}">
 {% endblock %}
-
-{% block nowo_ui_navigation %}
-    {% set locale_labels = {
-        en: 'English',
-        es: 'Español',
-        it: 'Italiano',
-        fr: 'Français',
-        pt: 'Português',
-        de: 'Deutsch',
-        nl: 'Nederlands',
-    } %}
-    <header class="nowo-ui-header" data-testid="demo-masthead">
-        <a class="nowo-ui-brand" href="{{ path('demo_index', { _locale: app.request.locale }) }}">{{ 'demo.brand'|trans }}</a>
-        <nav class="nowo-ui-header__nav" aria-label="{{ 'demo.language'|trans }}">
-            {% for loc in locales|default(['en', 'es']) %}
-                <a class="nowo-ui-link" href="{{ path('demo_index', { _locale: loc, case: current|default('contact') }) }}" title="{{ locale_labels[loc] }}"{% if app.request.locale == loc %} aria-current="page"{% endif %}>{{ loc|upper }}</a>
-            {% endfor %}
-        </nav>
-    </header>
-{% endblock %}
-
-{% block nowo_ui_content %}{% block body %}{% endblock %}{% endblock %}
 
 {% block nowo_ui_scripts %}
     {{ parent() }}
     {{ vite_entry_script_tags('app') }}
-    {% block scripts %}{% endblock %}
 {% endblock %}

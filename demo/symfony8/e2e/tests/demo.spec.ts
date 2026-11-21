@@ -6,9 +6,15 @@ import { test, expect } from '@playwright/test';
  */
 test.describe('AltchaType demo', () => {
   test('contact case renders the ALTCHA widget', async ({ page }) => {
-    const response = await page.goto('/en?case=contact');
+    const response = await page.goto('/en/contact');
     expect(response?.ok()).toBeTruthy();
     await expect(page.locator('.nowo-altcha-type altcha-widget').first()).toBeAttached();
+  });
+
+  test('the old ?case= URL redirects permanently to the case path', async ({ request }) => {
+    const response = await request.get('/en?case=low', { maxRedirects: 0 });
+    expect(response.status()).toBe(301);
+    expect(response.headers()['location']).toMatch(/\/en\/low$/);
   });
 
   test('challenge endpoint returns a signed challenge', async ({ request }) => {
@@ -20,14 +26,14 @@ test.describe('AltchaType demo', () => {
   });
 
   test('solving the challenge fills the hidden input', async ({ page }) => {
-    await page.goto('/en?case=low');
+    await page.goto('/en/low');
     const host = page.locator('.nowo-altcha-type').first();
     await host.locator('altcha-widget label').first().click();
     await expect(host.locator('[data-altcha-type-target="input"]')).not.toHaveValue('', { timeout: 30000 });
   });
 
   test('submitting a solved form passes server-side verification', async ({ page }) => {
-    await page.goto('/en?case=low');
+    await page.goto('/en/low');
     await page.getByLabel('Name', { exact: true }).fill('Ada');
     await page.getByLabel('Email', { exact: true }).fill('ada@example.test');
     await page.getByLabel('Message', { exact: true }).fill('Hello from Playwright');
@@ -39,7 +45,7 @@ test.describe('AltchaType demo', () => {
   });
 
   test('submitting without solving shows the validation error', async ({ page }) => {
-    await page.goto('/en?case=low');
+    await page.goto('/en/low');
     await page.getByLabel('Name', { exact: true }).fill('Ada');
     await page.getByLabel('Email', { exact: true }).fill('ada@example.test');
     await page.getByLabel('Message', { exact: true }).fill('No proof-of-work');
@@ -52,7 +58,7 @@ test.describe('AltchaType demo', () => {
   });
 
   test('ALTCHA v3 Argon2id profile solves in the browser and passes server verification', async ({ page }) => {
-    await page.goto('/en?case=memory_hard');
+    await page.goto('/en/memory_hard');
     await page.getByLabel('Name', { exact: true }).fill('Ada');
     await page.getByLabel('Email', { exact: true }).fill('ada@example.test');
     await page.getByLabel('Message', { exact: true }).fill('Memory-hard proof-of-work');
