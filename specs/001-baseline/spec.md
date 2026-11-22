@@ -59,6 +59,7 @@
 - **FR-DI-4** — `prepend()` adds the matching bundle form theme to `twig.form_themes` and the asset package `nowo_altcha_type` (`/bundles/nowoaltchatype`).
 - **FR-DI-5** — `replay_protection` (default enabled, `cache.app`) wires a PSR-6 pool into `AltchaVerifier`; disabled → `null`.
 - **FR-DI-6** — `TwigPathsPass` appends `Resources/views` under namespace `NowoAltchaTypeBundle` so app overrides win.
+- **FR-DI-8** — `ReplayLockPass` checks at build time that the replay lock factory service exists; when missing, the replay check is best-effort and the pass logs a compiler warning, or fails the build with `replay_protection.require_lock: true`.
 
 ### Challenge endpoint (`FR-CTRL-*`)
 
