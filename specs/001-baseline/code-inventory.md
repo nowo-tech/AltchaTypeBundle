@@ -1,10 +1,10 @@
 # Code inventory — AltchaTypeBundle baseline (001)
 
-Last audited: 2026-11-16
+Last audited: 2026-11-22
 
 Scope: every file under `src/` loaded by integrators or the runtime. Co-located Vitest specs (`*.test.ts`, 4 files) are **excluded** (they are tests, covered by `vitest.config.ts`). Build outputs are documented as outputs of named sources (`FR-BUILD-*`).
 
-Audit command: `find src -type f ! -name '*.test.ts' | wc -l` → **46**.
+Audit command: `find src -type f ! -name '*.test.ts' | wc -l` → **47**.
 
 ## Bundle and DI
 
@@ -14,6 +14,7 @@ Audit command: `find src -type f ! -name '*.test.ts' | wc -l` → **46**.
 | `src/DependencyInjection/Configuration.php` | Bundle and DI | FR-DI-2, FR-DI-3, FR-DI-7 |
 | `src/DependencyInjection/AltchaTypeExtension.php` | Bundle and DI | FR-DI-4, FR-DI-5 |
 | `src/DependencyInjection/Compiler/TwigPathsPass.php` | Bundle and DI | FR-DI-6 |
+| `src/DependencyInjection/Compiler/ReplayLockPass.php` | Bundle and DI | FR-DI-8 |
 | `src/Resources/config/services.yaml` | Bundle and DI | FR-DI-1, FR-DI-5 |
 
 ## Controller
@@ -106,7 +107,7 @@ Audit command: `find src -type f ! -name '*.test.ts' | wc -l` → **46**.
 
 | Category | Units |
 | --- | --- |
-| Bundle and DI | 5 |
+| Bundle and DI | 6 |
 | Controller | 1 |
 | Services | 6 |
 | Profiles | 1 |
@@ -116,6 +117,6 @@ Audit command: `find src -type f ! -name '*.test.ts' | wc -l` → **46**.
 | Translations | 7 |
 | Assets | 6 |
 | Build outputs | 4 |
-| **Total mapped** | **46 / 46** |
+| **Total mapped** | **47 / 47** |
 
 Tests: PHPUnit `tests/Unit/**` (one test class per production PHP class); Vitest co-located specs; Playwright demo e2e.
