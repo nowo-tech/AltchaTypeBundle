@@ -20,6 +20,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Debug output prefix of the widget logger changed from `[nowo-altcha-type]` to `[altcha-type]` (the house logger name), and the `typeof console.debug === 'function'` guard is gone. Debug output only, off by default (audit ZAI-6).
+
 ## [1.5.0] - 2026-11-23
 
 ### Changed
