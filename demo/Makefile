@@ -148,7 +148,7 @@ release-verify:
 		$(MAKE) up-$$d; \
 		echo "Waiting for $$d to be ready..."; code=000; \
 		for i in $$(seq 1 30); do \
-			code=$$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:$$port/en 2>/dev/null || echo "000"); \
+			code=$$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:$$port/en/contact 2>/dev/null || echo "000"); \
 			[ "$$code" = "200" ] && break; sleep 2; \
 		done; \
 		$(MAKE) down-$$d 2>/dev/null || true; \

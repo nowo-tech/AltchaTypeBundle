@@ -13,6 +13,12 @@ SERVICE_PHP := php
 # Pin the same pnpm as package.json "packageManager" (global latest pnpm 10+ rejects this lockfile's identity).
 PNPM := npx --yes pnpm@10.15.0
 
+# Wait until the entrypoint finished its own composer install / asset build / cache:clear and exec'd FrankenPHP,
+# so Makefile-driven composer commands never run concurrently with it on the shared var/cache.
+WAIT_SERVER := i=0; until $(COMPOSE) exec -T $(SERVICE_PHP) pgrep -x frankenphp >/dev/null 2>&1; do i=$$((i+1)); [ $$i -gt 180 ] && { echo "FrankenPHP did not start in time"; exit 1; }; sleep 2; done
+# Scripts (cache:clear) are skipped: the entrypoint clears the cache before the server starts; only assets are installed.
+COMPOSER_INSTALL := composer install --no-interaction --no-scripts && php bin/console assets:install public
+
 .PHONY: help up down restart build install shell logs cache-clear update-bundle ensure-up ensure-install test test-coverage assets verify test-e2e demo-screenshots
 
 help:
@@ -30,7 +36,7 @@ help:
 	@echo "  make logs          Show container logs"
 	@echo "  make test          HTTP smoke + Playwright e2e"
 	@echo "  make test-coverage Same as test (no PHP code under test in the demo)"
-	@echo "  make verify        Ensure up and require HTTP 200 on /en (REQ-TEST-011)"
+	@echo "  make verify        Ensure up and require HTTP 200 on /en/contact (REQ-TEST-011)"
 	@echo ""
 	@echo "  make test-e2e       Playwright e2e (REQ-DEMO-013)"
 	@echo "  make demo-screenshots  Refresh docs/images/demo/*.webp"
@@ -39,9 +45,9 @@ up:
 	@if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || (echo "APP_ENV=dev" > .env; echo "APP_DEBUG=1" >> .env; echo "APP_SECRET=change-me" >> .env; echo "PORT=8055" >> .env); fi
 	$(COMPOSE) up -d
 	@echo "Waiting for container to be ready..."
-	@sleep 5
+	@$(WAIT_SERVER)
 	@echo "Installing dependencies..."
-	@$(COMPOSE) exec -T -e COMPOSER_MEMORY_LIMIT=-1 $(SERVICE_PHP) composer install --no-interaction
+	@$(COMPOSE) exec -T -e COMPOSER_MEMORY_LIMIT=-1 $(SERVICE_PHP) sh -c '$(COMPOSER_INSTALL)'
 	@$(MAKE) assets
 	@PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | tr -d '\r'); \
 	[ -z "$$PORT" ] && PORT=$$(grep "^PORT=" .env.example 2>/dev/null | cut -d= -f2 | tr -d '\r'); \
@@ -60,13 +66,13 @@ ensure-up:
 		echo "Container not ready (or restarting). Stopping and starting fresh..."; \
 		$(COMPOSE) down 2>/dev/null; \
 		$(COMPOSE) up -d; \
-		sleep 5; \
-		$(COMPOSE) exec -T -e COMPOSER_MEMORY_LIMIT=-1 $(SERVICE_PHP) composer install --no-interaction; \
+		$(WAIT_SERVER); \
+		$(COMPOSE) exec -T -e COMPOSER_MEMORY_LIMIT=-1 $(SERVICE_PHP) sh -c '$(COMPOSER_INSTALL)'; \
 		$(COMPOSE) exec -T $(SERVICE_PHP) sh -c '$(PNPM) install && $(PNPM) rebuild esbuild && $(PNPM) run build'; \
 	fi
 
 ensure-install: ensure-up
-	$(COMPOSE) exec -T -e COMPOSER_MEMORY_LIMIT=-1 $(SERVICE_PHP) composer install --no-interaction
+	$(COMPOSE) exec -T -e COMPOSER_MEMORY_LIMIT=-1 $(SERVICE_PHP) sh -c '$(COMPOSER_INSTALL)'
 	@$(MAKE) assets
 
 install: ensure-install
@@ -96,15 +102,15 @@ test: ensure-install
 
 test-coverage: test
 
-# REQ-TEST-011: demo smoke — boot + HTTP 200 on /en (retries while FrankenPHP warms up).
+# REQ-TEST-011: demo smoke — boot + HTTP 200 on /en/contact (retries while FrankenPHP warms up).
 verify: ensure-up
 	@port=$$(grep '^PORT=' .env 2>/dev/null | cut -d= -f2 | tr -d '\r'); [ -z "$$port" ] && port=8055; \
 	for i in $$(seq 1 30); do \
-		code=$$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:$$port/en 2>/dev/null || echo "000"); \
-		[ "$$code" = "200" ] && { echo "OK (HTTP 200 on /en)"; exit 0; }; \
+		code=$$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:$$port/en/contact 2>/dev/null || echo "000"); \
+		[ "$$code" = "200" ] && { echo "OK (HTTP 200 on /en/contact)"; exit 0; }; \
 		sleep 2; \
 	done; \
-	echo "Failed (HTTP $$code on /en)"; exit 1
+	echo "Failed (HTTP $$code on /en/contact)"; exit 1
 
 
 # REQ-MAKE-008: update-deps (REQ-MAKE-008)

@@ -1,4 +1,4 @@
-# REQ-TEST-011 — Demo smoke: boot the FrankenPHP demo and assert HTTP 200 on /en.
+# REQ-TEST-011 — Demo smoke: boot the FrankenPHP demo and assert HTTP 200 on /en/contact (/en itself redirects).
 # REQ-DEMO-013 — then run the Playwright e2e suite (solves a real ALTCHA challenge).
 name: Demo smoke
 
