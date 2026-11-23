@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
-    "altcha": "^3.6.0"
+    "altcha": "^3.7.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
