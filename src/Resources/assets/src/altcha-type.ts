@@ -52,6 +52,7 @@ const globalScope = window as Window & { [bootFlag]?: boolean };
 // The widget template may emit this script once per field; boot only once per page.
 if (globalScope[bootFlag] !== true) {
   globalScope[bootFlag] = true;
+  getLogger().scriptLoaded();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot, { once: true });
   } else {
