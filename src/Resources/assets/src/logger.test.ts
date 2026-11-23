@@ -3,7 +3,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createBundleLogger, getLogger, setAltchaTypeDebug } from './logger';
+import { configureAltchaTypeLogger, createBundleLogger, getLogger, setAltchaTypeDebug } from './logger';
 
 describe('createBundleLogger', () => {
   let consoleLog: ReturnType<typeof vi.fn>;
@@ -80,7 +80,7 @@ describe('createBundleLogger', () => {
     log.setDebug(true);
     log.debug({ foo: 1 });
     expect(consoleDebug).toHaveBeenCalled();
-    expect(consoleDebug.mock.calls[0].slice(2)).toContain('{"foo":1}');
+    expect(consoleDebug.mock.calls[0]?.slice(2)).toContain('{"foo":1}');
   });
 
   it('info() logs when debug enabled', () => {
@@ -128,7 +128,7 @@ describe('createBundleLogger', () => {
     const err = new Error('fail');
     log.error(err);
     expect(consoleError).toHaveBeenCalled();
-    expect(consoleError.mock.calls[0].slice(2)).toContain(err);
+    expect(consoleError.mock.calls[0]?.slice(2)).toContain(err);
   });
 
   it('info() with no args calls console.info with prefix only', () => {
@@ -157,7 +157,7 @@ describe('createBundleLogger', () => {
     log.setDebug(true);
     log.debug(null);
     expect(consoleDebug).toHaveBeenCalled();
-    expect(consoleDebug.mock.calls[0].slice(2)).toContain(null);
+    expect(consoleDebug.mock.calls[0]?.slice(2)).toContain(null);
   });
 
   describe('quiet switch', () => {
@@ -207,18 +207,33 @@ describe('createBundleLogger', () => {
 
 describe('Altcha Type shared logger', () => {
   afterEach(() => {
+    configureAltchaTypeLogger();
     setAltchaTypeDebug(false);
     vi.restoreAllMocks();
   });
 
-  it('getLogger() returns one shared instance whose banner carries the [altcha-type] prefix and the build id', () => {
+  it('getLogger() returns the shared instance whose banner carries the [altcha-type] prefix', () => {
     const consoleLog = vi.spyOn(console, 'log').mockImplementation(() => undefined);
 
     expect(getLogger()).toBe(getLogger());
     getLogger().scriptLoaded();
 
-    expect(consoleLog).toHaveBeenCalledTimes(1);
+    expect(String(consoleLog.mock.calls[0]?.[0])).toContain('[altcha-type] script loaded');
+    expect(String(consoleLog.mock.calls[0]?.[0])).not.toContain('build: ');
+  });
+
+  it('configureAltchaTypeLogger() adds the build time label to the banner and keeps the debug flag', () => {
+    const consoleLog = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    const consoleDebug = vi.spyOn(console, 'debug').mockImplementation(() => undefined);
+
+    setAltchaTypeDebug(true);
+    configureAltchaTypeLogger('2026-11-23 14:05 UTC');
+    getLogger().scriptLoaded();
+    getLogger().debug('hello');
+
     expect(String(consoleLog.mock.calls[0]?.[0])).toContain('[altcha-type] script loaded, build: ');
+    expect(String(consoleLog.mock.calls[0]?.[0])).toContain('2026-11-23 14:05 UTC');
+    expect(consoleDebug).toHaveBeenCalledTimes(1);
   });
 
   it('setAltchaTypeDebug() gates debug output of the shared logger', () => {

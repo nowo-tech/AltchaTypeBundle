@@ -162,11 +162,19 @@ export function createBundleLogger(name: string, options: BundleLoggerOptions = 
 /** Kept for existing imports: the Altcha Type logger is the house bundle logger. */
 export type AltchaTypeLogger = BundleLogger;
 
-declare const __ALTCHA_TYPE_BUILD_TIME__: string;
+let debugFlag = false;
+let altchaTypeLogger: BundleLogger = createBundleLogger('altcha-type');
 
-const altchaTypeLogger = createBundleLogger('altcha-type', {
-  buildTime: typeof __ALTCHA_TYPE_BUILD_TIME__ !== 'undefined' ? __ALTCHA_TYPE_BUILD_TIME__ : undefined,
-});
+/**
+ * Binds the shared logger to the build time label injected by Vite (called once by the entry, before `scriptLoaded()`).
+ *
+ * @param buildTime - Build time label such as `2026-11-23 14:05 UTC`; omitted when none was injected
+ * @returns void
+ */
+export function configureAltchaTypeLogger(buildTime?: string): void {
+  altchaTypeLogger = createBundleLogger('altcha-type', { buildTime });
+  altchaTypeLogger.setDebug(debugFlag);
+}
 
 /**
  * Enables or disables debug logging for the Altcha Type frontend.
@@ -175,6 +183,7 @@ const altchaTypeLogger = createBundleLogger('altcha-type', {
  * @returns void
  */
 export function setAltchaTypeDebug(enabled: boolean): void {
+  debugFlag = enabled;
   altchaTypeLogger.setDebug(enabled);
 }
 
