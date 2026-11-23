@@ -4,7 +4,7 @@
 
 import 'altcha';
 import { destroyAltchaContainer, initAltchaContainer } from './altcha-type-lib';
-import { getLogger, setAltchaTypeDebug } from './logger';
+import { configureAltchaTypeLogger, getLogger, setAltchaTypeDebug } from './logger';
 
 declare const __ALTCHA_TYPE_BUILD_TIME__: string;
 
@@ -52,6 +52,8 @@ const globalScope = window as Window & { [bootFlag]?: boolean };
 // The widget template may emit this script once per field; boot only once per page.
 if (globalScope[bootFlag] !== true) {
   globalScope[bootFlag] = true;
+  configureAltchaTypeLogger(typeof __ALTCHA_TYPE_BUILD_TIME__ !== 'undefined' ? __ALTCHA_TYPE_BUILD_TIME__ : undefined);
+  getLogger().scriptLoaded();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot, { once: true });
   } else {

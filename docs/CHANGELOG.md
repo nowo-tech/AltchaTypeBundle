@@ -23,6 +23,10 @@
 
 - Demo: runs in UiKit's demo platform shell (`nowo-tech/ui-kit-bundle` ^2.60); the demo's own header is gone and the pages use the shell page headers and section cards. The `?case=` query became the path `/{locale}/{case}` (the old URL redirects with a 301); the widget stylesheet is the bundle's own asset. Demo only, no bundle change.
 
+### Added
+
+- **Console**: `altcha-type.js` (once per page, although the widget template emits the script once per field; the existing `getLogger()` / `setAltchaTypeDebug()` logger is now the house `createBundleLogger`, and debug output uses the `[altcha-type]` prefix) logs one line on load, `📦 [altcha-type] script loaded, build: 2026-11-23 14:05 UTC`, with the house `createBundleLogger`. The build time is read from the committed `build-info.json` (`{sourceHash, builtAt}`): it is reused while the sources are unchanged and renewed only when they change, so rebuilding unchanged sources never rewrites the committed assets (no wall-clock stamp, no user data). Quiet switch: `<html data-nowo-console="quiet">` or `globalThis.NOWO_CONSOLE = 'quiet'` prints nothing; the default is unchanged.
+
 ## [1.4.1] - 2026-11-19
 
 ### Fixed
