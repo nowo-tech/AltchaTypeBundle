@@ -1,6 +1,6 @@
 # Code inventory — AltchaTypeBundle baseline (001)
 
-Last audited: 2026-11-22
+Last audited: 2026-11-25
 
 Scope: every file under `src/` loaded by integrators or the runtime. Co-located Vitest specs (`*.test.ts`, 4 files) are **excluded** (they are tests, covered by `vitest.config.ts`). Build outputs are documented as outputs of named sources (`FR-BUILD-*`).
 
@@ -90,7 +90,7 @@ Audit command: `find src -type f ! -name '*.test.ts' | wc -l` → **47**.
 | `src/Resources/assets/src/altcha-type-lib.ts` | Assets | FR-ASSET-1 |
 | `src/Resources/assets/controllers/altcha_type_controller.ts` | Assets | FR-ASSET-2 |
 | `src/Resources/assets/src/altcha-type.ts` | Assets | FR-ASSET-3 |
-| `src/Resources/assets/src/logger.ts` | Assets | FR-ASSET-4 |
+| `src/Resources/assets/src/logger.ts` | Assets (bundle logger, `scriptLoaded()` banner, quiet switch) | FR-ASSET-4 |
 | `src/Resources/assets/src/altcha-workers.ts` | Assets | FR-ASSET-5 |
 | `src/Resources/assets/css/altcha-type.css` | Assets | FR-ASSET-4 |
 
