@@ -99,9 +99,9 @@
 - **FR-ASSET-1** — `initAltchaContainer` copies the widget payload into the hidden input on `verified` / `statechange: verified`, clears it on `unverified|error|expired`; `destroyAltchaContainer` removes listeners.
 - **FR-ASSET-2** — The Stimulus controller binds on connect and unbinds on disconnect.
 - **FR-ASSET-3** — The IIFE boots once per page and binds containers added later (MutationObserver).
-- **FR-ASSET-4** — Debug logging only when enabled; wrapper CSS hides the input.
+- **FR-ASSET-4** — `logger.ts` exposes `createBundleLogger('altcha-type', { buildTime })`: `scriptLoaded()` prints one `📦 [altcha-type] script loaded, build: <date> UTC` console line at startup (suppressed by `<html data-nowo-console="quiet">` or `globalThis.NOWO_CONSOLE = 'quiet'`); `debug/info/warn/error` are no-ops unless `data-altcha-type-debug-value` enables them (REQ-ASSETS-005). Wrapper CSS (`altcha-type.css`) hides the input.
 - **FR-ASSET-5** — `registerAlgorithmWorkers()` registers Argon2id / Scrypt workers from `data-altcha-type-workers-url-value` without overriding existing registrations.
-- **FR-BUILD-1** — `public/altcha-type.js` is built by Vite from `assets/src/altcha-type.ts` (bundles `altcha` v3); `public/altcha-type.css` is copied from `assets/css/altcha-type.css`.
+- **FR-BUILD-1** — `public/altcha-type.js` is built by Vite from `assets/src/altcha-type.ts` (bundles `altcha` v3), with the build label injected from the committed `build-info.json` (`buildTimeLabel()` in `vite.config.ts`, reproducible: unchanged sources keep the same label); `public/altcha-type.css` is copied from `assets/css/altcha-type.css`.
 - **FR-BUILD-2** — `public/workers/argon2id.js` and `public/workers/scrypt.js` are copied from the `altcha` package (`dist/workers/`) by `pnpm run build`.
 
 ### Translations (`FR-I18N-*`)
