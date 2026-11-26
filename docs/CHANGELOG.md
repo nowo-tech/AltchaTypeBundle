@@ -20,6 +20,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- The `📦 [name] script loaded` console banner now prints once per page, even when the script is loaded twice: per-name once-guard (a `Set` on `globalThis`) in `logger.ts`, with a Vitest test and rebuilt assets (REQ-ASSETS-005).
+
 ### Changed
 
 - Debug output prefix of the widget logger changed from `[nowo-altcha-type]` to `[altcha-type]` (the house logger name), and the `typeof console.debug === 'function'` guard is gone. Debug output only, off by default (audit ZAI-6).
